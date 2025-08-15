@@ -29,15 +29,7 @@ export default function SignupPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-8">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-xl">
-              <Scale className="w-8 h-8 text-white" />
-            </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Intern-Portal
-            </span>
-          </Link>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Join LegalConnect</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Join LEXHAVEN</h2>
           <p className="text-gray-600">Create your account and start your legal journey</p>
         </div>
 

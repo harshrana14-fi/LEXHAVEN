@@ -23,14 +23,22 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Company Info */}
           <div className="col-span-1 lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
-                <Scale className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                Intern-Portal
-              </h2>
-            </div>
+             <div className="flex items-center">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); // prevent default link behavior
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="group"
+            >
+              <img
+                src="/images/logobg.png"
+                alt="LEXHAVEN Logo"
+                className="w-40 h-32 object-contain p-2 relative z-10 transition-transform duration-300 group-hover:scale-110"
+              />
+            </a>
+          </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
               India's premier platform connecting law students with top internship opportunities, skills development, and career growth in the legal sector.
             </p>

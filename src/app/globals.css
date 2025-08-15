@@ -32,4 +32,8 @@ body {
 .animate-scroll {
   animation: scroll 20s linear infinite;
   width: max-content;
-}
+}  
+.animate-scroll:hover {
+    animation-play-state: paused;
+  }
+

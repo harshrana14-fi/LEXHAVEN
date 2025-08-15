@@ -1,176 +1,514 @@
 // components/Navbar.tsx
-'use client'
-import { useState } from 'react'
-import Link from 'next/link'
-import { Menu, X, Scale, User, Briefcase, Calendar, BookOpen, Trophy, PenTool } from 'lucide-react'
+"use client";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import {
+  Menu,
+  X,
+  Scale,
+  User,
+  Briefcase,
+  Calendar,
+  BookOpen,
+  Trophy,
+  PenTool,
+  Search,
+  Plus,
+  Building,
+  ChevronDown,
+  Settings,
+  Users,
+  Target,
+  BarChart3,
+} from "lucide-react";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
   const navigationItems = [
     {
-      name: 'Internships',
-      href: '/internships',
-      icon: <Briefcase className="w-4 h-4" />,
+      name: "Internships",
+      href: "/internships",
       children: [
-        { name: 'Browse Internships', href: '/internships' },
-        { name: 'Post Internship', href: '/post-internship' },
-        { name: 'My Applications', href: '/applications' }
-      ]
+        {
+          name: "Browse Internships",
+          href: "/internships",
+          desc: "Find legal internships across India",
+        },
+        {
+          name: "Remote Internships",
+          href: "/remote-internships",
+          desc: "Work from anywhere opportunities",
+        },
+        {
+          name: "Court Internships",
+          href: "/court-internships",
+          desc: "Gain courtroom experience",
+        },
+        {
+          name: "My Applications",
+          href: "/applications",
+          desc: "Track your application status",
+        },
+      ],
     },
     {
-      name: 'Events',
-      href: '/events',
-      icon: <Calendar className="w-4 h-4" />,
+      name: "Jobs",
+      href: "/jobs",
       children: [
-        { name: 'Webinars', href: '/webinars' },
-        { name: 'Legal Workshops', href: '/workshops' },
-        { name: 'Career Fairs', href: '/career-fairs' }
-      ]
+        {
+          name: "Browse Jobs",
+          href: "/jobs",
+          desc: "Full-time legal positions",
+        },
+        {
+          name: "Law Firm Jobs",
+          href: "/firm-jobs",
+          desc: "Top law firms hiring now",
+        },
+        {
+          name: "Corporate Legal",
+          href: "/corporate-legal",
+          desc: "In-house counsel positions",
+        },
+        {
+          name: "Government Jobs",
+          href: "/government-jobs",
+          desc: "Public sector opportunities",
+        },
+      ],
     },
     {
-      name: 'Resources',
-      href: '/resources',
-      icon: <BookOpen className="w-4 h-4" />,
+      name: "Competitions",
+      href: "/competitions",
       children: [
-        { name: 'Learning Materials', href: '/learning' },
-        { name: 'CV Builder', href: '/cv-builder' },
-        { name: 'Legal Guides', href: '/guides' }
-      ]
+        {
+          name: "Moot Courts",
+          href: "/moot-courts",
+          desc: "National & international moots",
+        },
+        {
+          name: "Legal Debates",
+          href: "/debates",
+          desc: "Parliamentary & legal debates",
+        },
+        {
+          name: "Case Competitions",
+          href: "/case-competitions",
+          desc: "Real-world case challenges",
+        },
+        {
+          name: "Essay Competitions",
+          href: "/essay-competitions",
+          desc: "Legal writing contests",
+        },
+      ],
     },
     {
-      name: 'Competitions',
-      href: '/competitions',
-      icon: <Trophy className="w-4 h-4" />
+      name: "Mentorships",
+      href: "/mentorships",
+      children: [
+        {
+          name: "Find Mentors",
+          href: "/mentors",
+          desc: "Connect with senior advocates",
+        },
+        {
+          name: "1-on-1 Sessions",
+          href: "/sessions",
+          desc: "Personalized career guidance",
+        },
+        {
+          name: "Group Mentoring",
+          href: "/group-mentoring",
+          desc: "Learn with peers",
+        },
+        {
+          name: "Industry Experts",
+          href: "/experts",
+          desc: "Connect with specialists",
+        },
+      ],
     },
     {
-      name: 'Skills',
-      href: '/skills',
-      icon: <PenTool className="w-4 h-4" />,
+      name: "Practice",
+      href: "/practice",
       children: [
-        { name: 'Skill Assessment', href: '/assessment' },
-        { name: 'Courses', href: '/courses' },
-        { name: 'Certifications', href: '/certifications' }
-      ]
-    }
-  ]
+        {
+          name: "Skills Assessment",
+          href: "/assessment",
+          desc: "Test your legal knowledge",
+        },
+        {
+          name: "Legal Courses",
+          href: "/courses",
+          desc: "Enhance your expertise",
+        },
+        {
+          name: "Mock Interviews",
+          href: "/mock-interviews",
+          desc: "Prepare for interviews",
+        },
+        {
+          name: "Certifications",
+          href: "/certifications",
+          desc: "Get industry certified",
+        },
+      ],
+    },
+    {
+      name: "More",
+      href: "#",
+      children: [
+        {
+          name: "Events & Webinars",
+          href: "/events",
+          desc: "Join live legal sessions",
+        },
+        {
+          name: "Legal Resources",
+          href: "/resources",
+          desc: "Study materials & guides",
+        },
+        {
+          name: "CV Builder",
+          href: "/cv-builder",
+          desc: "Create professional profile",
+        },
+        {
+          name: "Career Guidance",
+          href: "/career-guidance",
+          desc: "Plan your legal career",
+        },
+        {
+          name: "News & Updates",
+          href: "/news",
+          desc: "Latest legal industry news",
+        },
+      ],
+    },
+  ];
+
+  const hostDropdownItems = [
+    {
+      icon: <Target className="w-5 h-5" />,
+      title: "Opportunity",
+      description: "Engage your target audience",
+      href: "/post-opportunity",
+      color: "from-yellow-400 to-orange-500",
+    },
+    {
+      icon: <Briefcase className="w-5 h-5" />,
+      title: "Jobs & Internships",
+      description: "Hire the Right Talent",
+      href: "/post-job",
+      color: "from-pink-400 to-rose-500",
+    },
+    {
+      icon: <BookOpen className="w-5 h-5" />,
+      title: "Assessments",
+      description: "Evaluate candidates",
+      href: "/create-assessment",
+      color: "from-purple-400 to-indigo-500",
+    },
+    {
+      icon: <Settings className="w-5 h-5" />,
+      title: "Go to organizer dashboard",
+      description: "Manage listing, Festivals, Assessments",
+      href: "/dashboard",
+      color: "from-gray-400 to-gray-600",
+    },
+  ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const scrollToHome = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setActiveDropdown(null);
+    setIsMenuOpen(false);
+  };
+
+  const toggleDropdown = (name: string) => {
+    setActiveDropdown(activeDropdown === name ? null : name);
+  };
 
   return (
-    <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <nav
+      className="bg-white/98 backdrop-blur-lg border-b border-slate-200/80 sticky top-0 z-50 shadow-lg shadow-slate-900/5"
+      ref={navRef}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
-              <Scale className="w-6 h-6 text-white" />
-            </div>
-            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Intern-Portal
-            </Link>
+          {/* Logo Section */}
+          <div className="flex items-center">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); // prevent default link behavior
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="group"
+            >
+              <img
+                src="/images/logobg1.png"
+                alt="LEXHAVEN Logo"
+                className="w- h-50 object-contain p-2 relative z-10 transition-transform duration-300 group-hover:scale-110"
+              />
+            </a>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-1">
             {navigationItems.map((item) => (
-              <div
-                key={item.name}
-                className="relative"
-                onMouseEnter={() => item.children && setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <Link
-                  href={item.href}
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+              <div key={item.name} className="relative">
+                <button
+                  onClick={() =>
+                    item.children ? toggleDropdown(item.name) : null
+                  }
+                  onMouseEnter={() =>
+                    item.children && setActiveDropdown(item.name)
+                  }
+                  className={`flex items-center space-x-1.5 px-4 py-2.5 text-slate-700 hover:text-blue-600 transition-all duration-200 font-medium text-sm rounded-xl hover:bg-blue-50/60 ${
+                    activeDropdown === item.name
+                      ? "text-blue-600 bg-blue-50/60"
+                      : ""
+                  }`}
                 >
-                  {item.icon}
                   <span>{item.name}</span>
-                </Link>
-                
+                  {item.children && (
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        activeDropdown === item.name ? "rotate-180" : ""
+                      }`}
+                    />
+                  )}
+                </button>
+
                 {item.children && activeDropdown === item.name && (
-                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-white/98 backdrop-blur-lg rounded-2xl shadow-2xl border border-slate-200/80 py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {item.children.map((child) => (
                       <Link
                         key={child.name}
                         href={child.href}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                        className="block px-4 py-3 hover:bg-blue-50/80 transition-colors duration-200 mx-2 rounded-xl group"
+                        onClick={() => setActiveDropdown(null)}
                       >
-                        {child.name}
+                        <div className="font-medium text-slate-800 group-hover:text-blue-600 transition-colors">
+                          {child.name}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5">
+                          {child.desc}
+                        </div>
                       </Link>
                     ))}
                   </div>
                 )}
               </div>
             ))}
-          </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+            {/* Host Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => toggleDropdown("host")}
+                className={`flex items-center space-x-2 px-4 py-2.5 text-slate-700 hover:text-blue-600 font-medium transition-all duration-200 text-sm rounded-xl hover:bg-slate-50/80 border border-slate-200/60 hover:border-blue-200 ${
+                  activeDropdown === "host"
+                    ? "text-blue-600 bg-blue-50/60 border-blue-200"
+                    : ""
+                }`}
+              >
+                <Plus className="w-4 h-4" />
+                <span>Host</span>
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    activeDropdown === "host" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {activeDropdown === "host" && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-white/98 backdrop-blur-lg rounded-2xl shadow-2xl border border-slate-200/80 py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {hostDropdownItems.map((item, index) => (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      className="flex items-center space-x-4 px-4 py-4 hover:bg-slate-50/80 transition-colors duration-200 mx-2 rounded-xl group"
+                      onClick={() => setActiveDropdown(null)}
+                    >
+                      <div
+                        className={`p-3 rounded-xl bg-gradient-to-r ${item.color} shadow-lg`}
+                      >
+                        <div className="text-white">{item.icon}</div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
+                          {item.title}
+                        </div>
+                        <div className="text-sm text-slate-500 mt-0.5">
+                          {item.description}
+                        </div>
+                      </div>
+                      {index < hostDropdownItems.length - 1 &&
+                        item.title === "Assessments" && (
+                          <div className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                            Upgrade
+                          </div>
+                        )}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Login Button */}
             <Link
               href="/login"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+              className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all duration-200 text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Login
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              Sign Up
             </Link>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="lg:hidden flex items-center space-x-3">
+            <button className="p-2 text-slate-700 hover:text-blue-600 transition-colors duration-200 rounded-xl hover:bg-slate-50/80">
+              <Search className="w-5 h-5" />
+            </button>
+
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200"
+              className="p-2 text-slate-700 hover:text-blue-600 transition-colors duration-200 rounded-xl hover:bg-slate-50/80"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="lg:hidden border-t border-slate-200/60 bg-white/95 backdrop-blur-sm mt-2 rounded-2xl shadow-xl mx-2 mb-2">
+            {/* Mobile Search */}
+            <div className="px-4 py-4 border-b border-slate-200/60">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search opportunities..."
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50/80 border border-slate-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50"
+                />
+              </div>
+            </div>
+
+            <div className="px-2 py-3 space-y-1 max-h-96 overflow-y-auto">
               {navigationItems.map((item) => (
                 <div key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                  <button
+                    onClick={() =>
+                      item.children ? toggleDropdown(item.name) : null
+                    }
+                    className="flex items-center justify-between w-full text-left px-3 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 rounded-xl font-medium transition-colors duration-200"
                   >
-                    {item.icon}
                     <span>{item.name}</span>
-                  </Link>
-                  {item.children && (
-                    <div className="ml-6 space-y-1">
+                    {item.children && (
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 ${
+                          activeDropdown === item.name ? "rotate-180" : ""
+                        }`}
+                      />
+                    )}
+                  </button>
+                  {item.children && activeDropdown === item.name && (
+                    <div className="ml-4 space-y-1 mt-1">
                       {item.children.map((child) => (
                         <Link
                           key={child.name}
                           href={child.href}
-                          className="block text-gray-500 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-sm transition-colors duration-200"
+                          className="block px-3 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50/60 rounded-lg text-sm transition-colors duration-200"
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            setIsMenuOpen(false);
+                          }}
                         >
-                          {child.name}
+                          <div className="font-medium">{child.name}</div>
+                          <div className="text-xs text-slate-400 mt-0.5">
+                            {child.desc}
+                          </div>
                         </Link>
                       ))}
                     </div>
                   )}
                 </div>
               ))}
-              <div className="border-t border-gray-200 pt-4 space-y-2">
+
+              <div className="border-t border-slate-200/60 pt-4 mt-4 space-y-2">
+                <button
+                  onClick={() => toggleDropdown("host-mobile")}
+                  className="flex items-center justify-between w-full px-3 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 rounded-xl font-medium transition-colors duration-200"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Plus className="w-4 h-4" />
+                    <span>Host</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      activeDropdown === "host-mobile" ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {activeDropdown === "host-mobile" && (
+                  <div className="ml-4 space-y-1">
+                    {hostDropdownItems.map((item) => (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        className="flex items-center space-x-3 px-3 py-3 hover:bg-slate-50/80 rounded-xl transition-colors duration-200"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        <div
+                          className={`p-2 rounded-lg bg-gradient-to-r ${item.color}`}
+                        >
+                          <div className="text-white text-sm">{item.icon}</div>
+                        </div>
+                        <div>
+                          <div className="font-medium text-slate-800 text-sm">
+                            {item.title}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            {item.description}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
                 <Link
                   href="/login"
-                  className="block text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                  className="block w-full text-center bg-blue-600 text-white px-3 py-3 rounded-xl font-medium hover:bg-blue-700 transition-all duration-200 shadow-lg"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="block bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-2 rounded-md text-base font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
-                >
-                  Sign Up
                 </Link>
               </div>
             </div>
@@ -178,7 +516,7 @@ const Navbar = () => {
         )}
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

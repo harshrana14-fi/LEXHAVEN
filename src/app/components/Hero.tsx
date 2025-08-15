@@ -1,7 +1,19 @@
 // components/Hero.tsx
-import Link from 'next/link'
-import { Search, ArrowRight, Star, Users, Building, Award, Briefcase, GraduationCap, Trophy } from 'lucide-react'
-import React from 'react'
+"use client";
+import Link from "next/link";
+import {
+  Search,
+  ArrowRight,
+  Star,
+  Users,
+  Building,
+  Award,
+  Briefcase,
+  GraduationCap,
+  Trophy,
+} from "lucide-react";
+import React from "react";
+import WhosUsingSection from "./WhosUsingSection";
 
 const Hero = () => {
   return (
@@ -33,27 +45,10 @@ const Hero = () => {
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-2xl">
-                Explore opportunities from top law firms, join prestigious moot courts, gain practical experience through internships, 
-                and connect with mentors who have shaped landmark cases.
+                Explore opportunities from top law firms, join prestigious moot
+                courts, gain practical experience through internships, and
+                connect with mentors who have shaped landmark cases.
               </p>
-            </div>
-
-            {/* Testimonial */}
-            <div className="bg-white/70 backdrop-blur-sm border border-white/40 rounded-2xl p-6 shadow-xl">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">K</span>
-                </div>
-                <div>
-                  <p className="text-slate-700 font-medium">"Just Secured My Dream Law Internship!"</p>
-                  <p className="text-slate-500 text-sm">- Kunal, Law Student</p>
-                </div>
-                <div className="ml-auto">
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    PRO
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* CTA */}
@@ -77,16 +72,51 @@ const Hero = () => {
           {/* Right Cards */}
           <div className="grid grid-cols-2 gap-4 lg:gap-6">
             {[
-              { title: "Internships", desc: "Gain Courtroom Experience", img: "https://tse4.mm.bing.net/th/id/OIP.E3Y68GCTPC9CZ10HrigAEgHaE7?pid=Api&P=0&h=220", color: "from-emerald-400 to-teal-500", },
-              { title: "Mentorships", desc: "Guidance from Top Advocates", img: "https://i.pinimg.com/originals/80/11/44/801144eaaf4a208d99b75f72e6538913.jpg", color: "from-orange-400 to-red-500", },
-              { title: "Jobs", desc: "Join Leading Law Firms", img: "https://images.unsplash.com/photo-1523292562811-8fa7962a78c8", color: "from-blue-400 to-indigo-600",},
-              { title: "Practice", desc: "Refine Legal Skills Daily", img: "https://tse2.mm.bing.net/th/id/OIP.4jdTPVOLFxe_ZEayyQaDXgHaEc?pid=Api&P=0&h=220", color: "from-purple-400 to-violet-600", icon: null },
-              { title: "Competitions", desc: "Battle in Moot Courts", img: "/images/helloo.jpg", color: "from-yellow-400 via-orange-400 to-red-500", icon: <Trophy className="w-6 h-6 text-yellow-200" /> },
-              { title: "More ➞", desc: "Explore Legal Resources", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba", color: "from-pink-400 to-rose-500", icon: null }
+              {
+                title: "Internships",
+                desc: "Gain Courtroom Experience",
+                img: "https://tse4.mm.bing.net/th/id/OIP.E3Y68GCTPC9CZ10HrigAEgHaE7?pid=Api&P=0&h=220",
+                color: "from-emerald-400 to-teal-500",
+              },
+              {
+                title: "Mentorships",
+                desc: "Guidance from Top Advocates",
+                img: "https://i.pinimg.com/originals/80/11/44/801144eaaf4a208d99b75f72e6538913.jpg",
+                color: "from-orange-400 to-red-500",
+              },
+              {
+                title: "Jobs",
+                desc: "Join Leading Law Firms",
+                img: "https://images.unsplash.com/photo-1523292562811-8fa7962a78c8",
+                color: "from-blue-400 to-indigo-600",
+              },
+              {
+                title: "Practice",
+                desc: "Refine Legal Skills Daily",
+                img: "https://tse2.mm.bing.net/th/id/OIP.4jdTPVOLFxe_ZEayyQaDXgHaEc?pid=Api&P=0&h=220",
+                color: "from-purple-400 to-violet-600",
+                icon: null,
+              },
+              {
+                title: "Competitions",
+                desc: "Battle in Moot Courts",
+                img: "/images/helloo.jpg",
+                color: "from-yellow-400 via-orange-400 to-red-500",
+                icon: <Trophy className="w-6 h-6 text-yellow-200" />,
+              },
+              {
+                title: "More ➞",
+                desc: "Explore Legal Resources",
+                img: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+                color: "from-pink-400 to-rose-500",
+                icon: null,
+              },
             ].map((card, i) => (
               <div
                 key={i}
-                className={`rounded-3xl p-6 text-white transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group cursor-pointer overflow-hidden relative ${i === 4 || i === 5 ? "col-span-2" : ""}`}
+                className={`rounded-3xl p-6 text-white transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group cursor-pointer overflow-hidden relative ${
+                  i === 4 || i === 5 ? "col-span-2" : ""
+                }`}
                 style={{
                   backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${card.img})`,
                   backgroundSize: "cover",
@@ -97,91 +127,169 @@ const Hero = () => {
                   <h3 className="text-xl font-bold">{card.title}</h3>
                   <p className="text-sm opacity-80">{card.desc}</p>
                 </div>
-                {card.icon && <div className="absolute bottom-4 right-4">{card.icon}</div>}
+                {card.icon && (
+                  <div className="absolute bottom-4 right-4">{card.icon}</div>
+                )}
               </div>
             ))}
           </div>
         </div>
-
-       
-
         {/* Who's Using Section */}
-<div className="mt-20">
- <h2 className="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-  Who&apos;s Using Our Platform?
-</h2>
-  <p className="text-center text-slate-500 max-w-2xl mx-auto mb-12">
-    Empowering the entire legal ecosystem — from aspiring lawyers to top law firms — 
-    with opportunities, tools, and connections.
-  </p>
+        <WhosUsingSection />
+        <section className="mt-0 bg-gradient-to-r from-slate-50 via-white to-slate-50 py-16 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0">
+            <div className="absolute top-10 left-20 w-64 h-64 bg-gradient-to-r from-blue-400/5 to-indigo-400/5 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-10 right-20 w-64 h-64 bg-gradient-to-r from-purple-400/5 to-pink-400/5 rounded-full blur-2xl"></div>
+          </div>
 
-  <div className="grid md:grid-cols-3 gap-8">
-    {/* Card 1 */}
-    <div className="bg-gradient-to-br from-white to-slate-50 p-6 rounded-2xl shadow-lg border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Law Students & Professionals</h3>
-      <ul className="text-slate-600 space-y-2 flex-1">
-        <li>• Access top legal internships & clerkships</li>
-        <li>• Participate in moot courts & debates</li>
-        <li>• Upskill with workshops & mentorships</li>
-        <li>• Showcase your profile to recruiters</li>
-      </ul>
-    </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="text-center mb-12">
+              <p className="text-lg sm:text-xl md:text-2xl text-slate-600 font-semibold tracking-wide mb-4">
+                Trusted by Leading Law Firms & Institutions
+              </p>
+              <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
+            </div>
 
-    {/* Card 2 */}
-    <div className="bg-gradient-to-br from-white to-slate-50 p-6 rounded-2xl shadow-lg border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Law Firms & Recruiters</h3>
-      <ul className="text-slate-600 space-y-2 flex-1">
-        <li>• Find skilled law graduates</li>
-        <li>• Post jobs & internships</li>
-        <li>• Streamline hiring with AI tools</li>
-        <li>• Connect with talent nationwide</li>
-      </ul>
-    </div>
-
-    {/* Card 3 */}
-    <div className="bg-gradient-to-br from-white to-slate-50 p-6 rounded-2xl shadow-lg border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Law Colleges & Universities</h3>
-      <ul className="text-slate-600 space-y-2 flex-1">
-        <li>• Offer top competitions & job opportunities</li>
-        <li>• Partner with firms for placements</li>
-        <li>• Track student performance</li>
-        <li>• Foster academia-industry collaboration</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-
-        {/* Trusted By */}
-<div className="mt-20 text-center overflow-hidden">
-  <p className="text-slate-500 font-medium mb-12">
-    Trusted by leading law firms & institutions
-  </p>
-
-  <div className="relative w-full overflow-hidden">
-    <div className="flex animate-scroll gap-12 opacity-80">
-      {/* Duplicate set for infinite loop */}
-      {[...Array(2)].map((_, setIndex) => (
-        <React.Fragment key={setIndex}>
-          <img src="https://www.khaitanco.com/images/b-cele-logo.png" alt="Firm 1" className="h-10" />
-          <img src="https://www.nyagrik.com/_next/image?url=%2Fnyagriklogo.png&w=128&q=75" alt="Firm 2" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14337638%2F954031_vaultprofileimage_1.gif&w=384&q=75" alt="Firm 3" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351101%2Fcravath-logo-color-300x300-01.jpg&w=384&q=75" alt="Firm 4" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14342886%2Fquinn-emanuel.jpg&w=384&q=75" alt="Firm 5" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14337638%2F954031_vaultprofileimage_1.gif&w=384&q=75" alt="Firm 6" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F20741%2Fjonesday_logo.jpg&w=384&q=75" alt="Firm 7" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351472%2Flogo-300x300.jpg&w=384&q=75" alt="Firm 8" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14339961%2Fgoodwin_logo.jpg&w=384&q=75" alt="Firm 9" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14346426%2Fmayer_brown_4c.jpg&w=384&q=75" alt="Firm 10" className="h-10" />
-          <img src="https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14352900%2Fvault-gd-monogram-300x300-0625.jpg&w=384&q=75" alt="Firm 11" className="h-10" />
-        </React.Fragment>
-      ))}
-    </div>
-  </div>
-</div>
+            {/* Logo Carousel Container */}
+            <div className="relative w-full overflow-hidden bg-white/40 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
+              <div className="flex animate-scroll gap-16 items-center">
+                {/* First set of logos */}
+                {[
+                  {
+                    src: "https://www.khaitanco.com/images/b-cele-logo.png",
+                    alt: "Khaitan & Co",
+                    name: "Khaitan & Co",
+                  },
+                  {
+                    src: "https://www.nyagrik.com/_next/image?url=%2Fnyagriklogo.png&w=128&q=75",
+                    alt: "Nyagrik",
+                    name: "Nyagrik",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14337638%2F954031_vaultprofileimage_1.gif&w=384&q=75",
+                    alt: "Law Firm 1",
+                    name: "Leading Firm",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351101%2Fcravath-logo-color-300x300-01.jpg&w=384&q=75",
+                    alt: "Cravath",
+                    name: "Cravath",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14342886%2Fquinn-emanuel.jpg&w=384&q=75",
+                    alt: "Quinn Emanuel",
+                    name: "Quinn Emanuel",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F20741%2Fjonesday_logo.jpg&w=384&q=75",
+                    alt: "Jones Day",
+                    name: "Jones Day",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351472%2Flogo-300x300.jpg&w=384&q=75",
+                    alt: "Law Firm 2",
+                    name: "Premium Firm",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14339961%2Fgoodwin_logo.jpg&w=384&q=75",
+                    alt: "Goodwin",
+                    name: "Goodwin",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14346426%2Fmayer_brown_4c.jpg&w=384&q=75",
+                    alt: "Mayer Brown",
+                    name: "Mayer Brown",
+                  },
+                  {
+                    src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14352900%2Fvault-gd-monogram-300x300-0625.jpg&w=384&q=75",
+                    alt: "Law Firm 3",
+                    name: "Elite Firm",
+                  },
+                ]
+                  .concat([
+                    // Duplicate set for seamless loop
+                    {
+                      src: "https://www.khaitanco.com/images/b-cele-logo.png",
+                      alt: "Khaitan & Co",
+                      name: "Khaitan & Co",
+                    },
+                    {
+                      src: "https://www.nyagrik.com/_next/image?url=%2Fnyagriklogo.png&w=128&q=75",
+                      alt: "Nyagrik",
+                      name: "Nyagrik",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14337638%2F954031_vaultprofileimage_1.gif&w=384&q=75",
+                      alt: "Law Firm 1",
+                      name: "Leading Firm",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351101%2Fcravath-logo-color-300x300-01.jpg&w=384&q=75",
+                      alt: "Cravath",
+                      name: "Cravath",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14342886%2Fquinn-emanuel.jpg&w=384&q=75",
+                      alt: "Quinn Emanuel",
+                      name: "Quinn Emanuel",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F20741%2Fjonesday_logo.jpg&w=384&q=75",
+                      alt: "Jones Day",
+                      name: "Jones Day",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351472%2Flogo-300x300.jpg&w=384&q=75",
+                      alt: "Law Firm 2",
+                      name: "Premium Firm",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14339961%2Fgoodwin_logo.jpg&w=384&q=75",
+                      alt: "Goodwin",
+                      name: "Goodwin",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14346426%2Fmayer_brown_4c.jpg&w=384&q=75",
+                      alt: "Mayer Brown",
+                      name: "Mayer Brown",
+                    },
+                    {
+                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14352900%2Fvault-gd-monogram-300x300-0625.jpg&w=384&q=75",
+                      alt: "Law Firm 3",
+                      name: "Elite Firm",
+                    },
+                  ])
+                  .map((firm, index) => (
+                    <div
+                      key={index}
+                      className="flex-shrink-0 group cursor-pointer"
+                    >
+                      <div className="relative p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-white/30 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-110">
+                        <img
+                          src={firm.src}
+                          alt={firm.alt}
+                          className="h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                        {/* Hover overlay with firm name */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center">
+                          <span className="text-white text-xs font-medium pb-2 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                            {firm.name}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

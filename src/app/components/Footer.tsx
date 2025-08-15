@@ -114,7 +114,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm">Email</p>
-                  <p className="text-white">hello@legalconnect.in</p>
+                  <p className="text-white">hello@lexhaven.com</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -123,7 +123,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm">Phone</p>
-                  <p className="text-white">+91 98765 43210</p>
+                  <p className="text-white">+91 XXXXX XXXXX</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

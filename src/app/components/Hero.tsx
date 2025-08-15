@@ -136,26 +136,78 @@ const Hero = () => {
         </div>
         {/* Who's Using Section */}
         <WhosUsingSection />
-        <section className="mt-0 bg-gradient-to-r from-slate-50 via-white to-slate-50 py-16 relative overflow-hidden">
-          {/* Background decoration */}
+        {/* Background decoration */}
+        <div className="mt-1 relative">
           <div className="absolute inset-0">
             <div className="absolute top-10 left-20 w-64 h-64 bg-gradient-to-r from-blue-400/5 to-indigo-400/5 rounded-full blur-2xl"></div>
             <div className="absolute bottom-10 right-20 w-64 h-64 bg-gradient-to-r from-purple-400/5 to-pink-400/5 rounded-full blur-2xl"></div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="text-center mb-12">
-              <p className="text-lg sm:text-xl md:text-2xl text-slate-600 font-semibold tracking-wide mb-4">
-                Trusted by Leading Law Firms & Institutions
-              </p>
-              <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
-            </div>
+          <div className="text-center mb-12">
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-600 font-semibold tracking-wide mb-4">
+              Trusted by Leading Law Firms & Institutions
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
+          </div>
 
-            {/* Logo Carousel Container */}
-            <div className="relative w-full overflow-hidden bg-white/40 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-              <div className="flex animate-scroll gap-16 items-center">
-                {/* First set of logos */}
-                {[
+          {/* Logo Carousel Container */}
+          <div className="relative w-full overflow-hidden bg-white/40 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
+            <div className="flex animate-scroll gap-16 items-center">
+              {/* First set of logos */}
+              {[
+                {
+                  src: "https://www.khaitanco.com/images/b-cele-logo.png",
+                  alt: "Khaitan & Co",
+                  name: "Khaitan & Co",
+                },
+                {
+                  src: "https://www.nyagrik.com/_next/image?url=%2Fnyagriklogo.png&w=128&q=75",
+                  alt: "Nyagrik",
+                  name: "Nyagrik",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14337638%2F954031_vaultprofileimage_1.gif&w=384&q=75",
+                  alt: "Law Firm 1",
+                  name: "Leading Firm",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351101%2Fcravath-logo-color-300x300-01.jpg&w=384&q=75",
+                  alt: "Cravath",
+                  name: "Cravath",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14342886%2Fquinn-emanuel.jpg&w=384&q=75",
+                  alt: "Quinn Emanuel",
+                  name: "Quinn Emanuel",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F20741%2Fjonesday_logo.jpg&w=384&q=75",
+                  alt: "Jones Day",
+                  name: "Jones Day",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351472%2Flogo-300x300.jpg&w=384&q=75",
+                  alt: "Law Firm 2",
+                  name: "Premium Firm",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14339961%2Fgoodwin_logo.jpg&w=384&q=75",
+                  alt: "Goodwin",
+                  name: "Goodwin",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14346426%2Fmayer_brown_4c.jpg&w=384&q=75",
+                  alt: "Mayer Brown",
+                  name: "Mayer Brown",
+                },
+                {
+                  src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14352900%2Fvault-gd-monogram-300x300-0625.jpg&w=384&q=75",
+                  alt: "Law Firm 3",
+                  name: "Elite Firm",
+                },
+              ]
+                .concat([
+                  // Duplicate set for seamless loop
                   {
                     src: "https://www.khaitanco.com/images/b-cele-logo.png",
                     alt: "Khaitan & Co",
@@ -206,87 +258,33 @@ const Hero = () => {
                     alt: "Law Firm 3",
                     name: "Elite Firm",
                   },
-                ]
-                  .concat([
-                    // Duplicate set for seamless loop
-                    {
-                      src: "https://www.khaitanco.com/images/b-cele-logo.png",
-                      alt: "Khaitan & Co",
-                      name: "Khaitan & Co",
-                    },
-                    {
-                      src: "https://www.nyagrik.com/_next/image?url=%2Fnyagriklogo.png&w=128&q=75",
-                      alt: "Nyagrik",
-                      name: "Nyagrik",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14337638%2F954031_vaultprofileimage_1.gif&w=384&q=75",
-                      alt: "Law Firm 1",
-                      name: "Leading Firm",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351101%2Fcravath-logo-color-300x300-01.jpg&w=384&q=75",
-                      alt: "Cravath",
-                      name: "Cravath",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14342886%2Fquinn-emanuel.jpg&w=384&q=75",
-                      alt: "Quinn Emanuel",
-                      name: "Quinn Emanuel",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F20741%2Fjonesday_logo.jpg&w=384&q=75",
-                      alt: "Jones Day",
-                      name: "Jones Day",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14351472%2Flogo-300x300.jpg&w=384&q=75",
-                      alt: "Law Firm 2",
-                      name: "Premium Firm",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14339961%2Fgoodwin_logo.jpg&w=384&q=75",
-                      alt: "Goodwin",
-                      name: "Goodwin",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14346426%2Fmayer_brown_4c.jpg&w=384&q=75",
-                      alt: "Mayer Brown",
-                      name: "Mayer Brown",
-                    },
-                    {
-                      src: "https://vault.com/_next/image?url=https%3A%2F%2Fmedia2.vault.com%2F14352900%2Fvault-gd-monogram-300x300-0625.jpg&w=384&q=75",
-                      alt: "Law Firm 3",
-                      name: "Elite Firm",
-                    },
-                  ])
-                  .map((firm, index) => (
-                    <div
-                      key={index}
-                      className="flex-shrink-0 group cursor-pointer"
-                    >
-                      <div className="relative p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-white/30 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-110">
-                        <img
-                          src={firm.src}
-                          alt={firm.alt}
-                          className="h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                        {/* Hover overlay with firm name */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center">
-                          <span className="text-white text-xs font-medium pb-2 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                            {firm.name}
-                          </span>
-                        </div>
+                ])
+                .map((firm, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 group cursor-pointer"
+                  >
+                    <div className="relative p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-white/30 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-110">
+                      <img
+                        src={firm.src}
+                        alt={firm.alt}
+                        className="h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                      {/* Hover overlay with firm name */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center">
+                        <span className="text-white text-xs font-medium pb-2 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                          {firm.name}
+                        </span>
                       </div>
                     </div>
-                  ))}
-              </div>
+                  </div>
+                ))}
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </section>
   );

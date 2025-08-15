@@ -28,7 +28,7 @@ const Footer = () => {
                 <Scale className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                LegalConnect
+                Intern-Portal
               </h2>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">

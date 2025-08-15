@@ -34,7 +34,7 @@ export default function SignupPage() {
               <Scale className="w-8 h-8 text-white" />
             </div>
             <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              LegalConnect
+              Intern-Portal
             </span>
           </Link>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Join LegalConnect</h2>

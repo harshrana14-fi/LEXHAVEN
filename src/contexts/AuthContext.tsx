@@ -73,20 +73,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithLinkedIn = async () => {
-    const { user } = await signInWithPopup(auth, linkedinProvider)
-    
-    // Check if user exists in Firestore, if not create profile
-    const userDoc = await getDoc(doc(db, 'users', user.uid))
-    if (!userDoc.exists()) {
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        fullName: user.displayName,
-        userType: 'company', // Default to company for LinkedIn
-        provider: 'linkedin',
-        createdAt: new Date().toISOString()
-      })
-    }
+  const { user } = await signInWithPopup(auth, linkedinProvider) // 👈 important!
+
+  // Check if user exists in Firestore, if not create profile
+  const userDoc = await getDoc(doc(db, 'users', user.uid))
+  if (!userDoc.exists()) {
+    await setDoc(doc(db, 'users', user.uid), {
+      email: user.email,
+      fullName: user.displayName,
+      userType: 'company', // Default to company for LinkedIn
+      provider: 'linkedin',
+      createdAt: new Date().toISOString()
+    })
   }
+}
 
   const signOut = async () => {
     await firebaseSignOut(auth)

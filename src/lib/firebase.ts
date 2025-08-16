@@ -1,6 +1,6 @@
 // lib/firebase.ts
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, OAuthProvider} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -15,6 +15,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const linkedinProvider = new OAuthProvider("linkedin.com");
+export { linkedinProvider };
 
 // Auth
 export const auth = getAuth(app);

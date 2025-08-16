@@ -1,27 +1,77 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
-import {
-  User, FileText, Briefcase, Target, Users, BarChart3, Trophy, Star,
+import { User ,FileText, Briefcase, Target, Users, BarChart3, Trophy, Star,
   Bookmark, Clock, GraduationCap, BookOpen, Award, Settings, Crown,
   UserCog, Bell, ChevronDown, X, TrendingUp, Calendar,
-  Shield, Zap, Globe, MessageCircle, Send, Search, Minus, Maximize2
+  Shield, Zap, Globe, MessageCircle, Send, Search, Minus, Maximize2,
+  ChevronUp, Phone, Video, MoreHorizontal, Paperclip, Smile
 } from 'lucide-react'
 import Hero from '../components/Hero'
 import { auth, db } from '@/lib/firebase'
+import { Timestamp } from "firebase/firestore"
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { 
+  doc, 
+  getDoc, 
+  collection, 
+  query, 
+  where, 
+  orderBy, 
+  onSnapshot, 
+  addDoc, 
+  updateDoc, 
+  serverTimestamp,
+  getDocs,
+  limit
+} from 'firebase/firestore'
 
 const Dashboard = () => {
-  const [user, setUser] = useState<FirebaseUser | null>(null)
+  const [user, setUser] = useState<any>(null);
   const [fullName, setFullName] = useState<string | null>(null)
   const [university, setUniversity] = useState<string | null>(null)
+  const [userType, setUserType] = useState<string>('student') // 'student' or 'company'
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  
+  // Chat states
   const [isChatOpen, setIsChatOpen] = useState(false)
-  const [selectedChat, setSelectedChat] = useState(null)
+  const [isChatMinimized, setIsChatMinimized] = useState(false)
+  const [selectedChat, setSelectedChat] = useState<Conversation | null>(null)
   const [newMessage, setNewMessage] = useState('')
-  const [messages, setMessages] = useState({})
+  const [chatUsers, setChatUsers] = useState<ChatUser[]>([])
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [currentMessages, setCurrentMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
+  const [unreadCount, setUnreadCount] = useState(0)
+  
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const chatInputRef = useRef(null)
+
+  type ChatUser = {
+  id: string
+  fullName?: string
+  displayName?: string
+  university?: string
+  companyName?: string
+  userType?: string
+}
+
+type Conversation = {
+  id: string
+  participants: string[]
+  participantNames: Record<string, string>
+  lastMessage: string
+  lastMessageTime?: Timestamp
+  unreadCounts: Record<string, number>
+}
+type Message = {
+  id: string
+  senderId: string
+  senderName: string
+  content: string
+  timestamp?: Timestamp
+  type: "text" | "image" | "file"
+}
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -33,9 +83,11 @@ const Dashboard = () => {
             const data = userDoc.data()
             setFullName(data.fullName || currentUser.displayName || null)
             setUniversity(data.university || 'Student')
+            setUserType(data.userType || 'student')
           } else {
             setFullName(currentUser.displayName || null)
             setUniversity('Student')
+            setUserType('student')
           }
         } catch (error) {
           console.error('Error fetching Firestore profile:', error)
@@ -44,6 +96,7 @@ const Dashboard = () => {
         setUser(null)
         setFullName(null)
         setUniversity(null)
+        setUserType('student')
       }
       setLoading(false)
     })
@@ -51,79 +104,88 @@ const Dashboard = () => {
     return () => unsubscribe()
   }, [])
 
-  const firstName =
-    fullName?.split(' ')[0] ||
-    user?.displayName?.split(' ')[0] ||
-    'Student'
-
-  // Sample chat users data
-  const [chatUsers] = useState([
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      title: 'Senior Associate at Baker McKenzie',
-      avatar: 'SJ',
-      online: true,
-      lastSeen: 'Online now',
-      unread: 2
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      title: 'Legal Counsel at Microsoft',
-      avatar: 'MC',
-      online: false,
-      lastSeen: '2 hours ago',
-      unread: 0
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      title: 'Partner at Skadden',
-      avatar: 'ER',
-      online: true,
-      lastSeen: 'Online now',
-      unread: 1
-    },
-    {
-      id: 4,
-      name: 'David Thompson',
-      title: 'In-House Counsel at Goldman Sachs',
-      avatar: 'DT',
-      online: false,
-      lastSeen: '1 day ago',
-      unread: 0
-    },
-    {
-      id: 5,
-      name: 'Lisa Park',
-      title: 'Legal Director at Amazon',
-      avatar: 'LP',
-      online: true,
-      lastSeen: 'Online now',
-      unread: 3
-    }
-  ])
-
-  // Initialize sample messages
+  // Fetch potential chat users based on user type
   useEffect(() => {
-    const sampleMessages = {
-      1: [
-        { id: 1, sender: 'Sarah Johnson', content: 'Hi! I saw your profile and wanted to connect. Are you interested in corporate law opportunities?', timestamp: '10:30 AM', isMe: false },
-        { id: 2, sender: 'You', content: 'Yes, absolutely! I\'d love to learn more about your experience at Baker McKenzie.', timestamp: '10:35 AM', isMe: true },
-        { id: 3, sender: 'Sarah Johnson', content: 'Great! We have some exciting openings coming up. Would you be available for a quick call this week?', timestamp: '10:45 AM', isMe: false }
-      ],
-      3: [
-        { id: 1, sender: 'Emily Rodriguez', content: 'Congratulations on your recent achievement! I\'d love to discuss potential mentorship opportunities.', timestamp: '2:15 PM', isMe: false }
-      ],
-      5: [
-        { id: 1, sender: 'Lisa Park', content: 'Hey! Are you attending the Legal Tech Summit next month?', timestamp: 'Yesterday', isMe: false },
-        { id: 2, sender: 'You', content: 'I\'m planning to! Are you speaking there?', timestamp: 'Yesterday', isMe: true },
-        { id: 3, sender: 'Lisa Park', content: 'Yes, I\'m giving a keynote on AI in legal practice. We should definitely meet up there!', timestamp: 'Yesterday', isMe: false }
-      ]
+    if (!user || !userType) return
+
+    const fetchChatUsers = async () => {
+      try {
+        // If user is a student, fetch companies/firms
+        // If user is a company, fetch students
+        const targetUserType = userType === 'student' ? 'company' : 'student'
+        
+        const usersQuery = query(
+          collection(db, 'users'),
+          where('userType', '==', targetUserType),
+          limit(50)
+        )
+        
+        const usersSnapshot = await getDocs(usersQuery)
+        const users = usersSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        
+        setChatUsers(users)
+      } catch (error) {
+        console.error('Error fetching chat users:', error)
+      }
     }
-    setMessages(sampleMessages)
-  }, [])
+
+    fetchChatUsers()
+  }, [user, userType])
+
+  // Listen to conversations
+  useEffect(() => {
+    if (!user) return
+
+    const conversationsQuery = query(
+      collection(db, 'conversations'),
+      where('participants', 'array-contains', user.uid),
+      orderBy('lastMessageTime', 'desc')
+    )
+
+    const unsubscribe = onSnapshot(conversationsQuery, (snapshot) => {
+  const convos: Conversation[] = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...(doc.data() as Omit<Conversation, "id">),
+  }))
+
+  setConversations(convos)
+
+  // Calculate unread count
+  const totalUnread = convos.reduce((sum, convo) => {
+    const unreadForUser = convo.unreadCounts?.[user?.uid || ""] || 0
+    return sum + unreadForUser
+  }, 0)
+
+  setUnreadCount(totalUnread)
+})
+
+
+    return () => unsubscribe()
+  }, [user])
+
+  // Listen to messages for selected chat
+  useEffect(() => {
+  if (!selectedChat) return
+
+  const messagesQuery = query(
+    collection(db, "conversations", selectedChat.id, "messages"),
+    orderBy("timestamp", "asc")
+  )
+
+  const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+    const messages: Message[] = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...(doc.data() as Omit<Message, "id">),
+    }))
+    setCurrentMessages(messages)
+  })
+
+  return () => unsubscribe()
+}, [selectedChat])
+
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
@@ -132,32 +194,108 @@ const Dashboard = () => {
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages, selectedChat])
+  }, [currentMessages])
 
-  // Handle sending messages
-  const handleSendMessage = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    if (!newMessage.trim() || !selectedChat) return
+  // Create or get conversation
+  const getOrCreateConversation = async (otherUserId: string): Promise<Conversation | null> => {
+  try {
+    if (!user) return null
 
-    const message = {
-      id: Date.now(),
-      sender: 'You',
-      content: newMessage.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isMe: true
+    // Check if conversation already exists
+    const existingConvo = conversations.find(convo =>
+      convo.participants.includes(otherUserId)
+    )
+    
+    if (existingConvo) {
+      return existingConvo
     }
 
-    setMessages(prev => ({
-      ...prev,
-      [selectedChat.id]: [...(prev[selectedChat.id] || []), message]
-    }))
-    setNewMessage('')
+    // Create new conversation
+    const conversationData: Omit<Conversation, "id"> = {
+      participants: [user.uid, otherUserId],
+      participantNames: {
+        [user.uid]: user.displayName || "User",
+        [otherUserId]: chatUsers.find(u => u.id === otherUserId)?.fullName || "User"
+      },
+      lastMessage: "",
+      lastMessageTime: serverTimestamp() as any, // Firestore Timestamp
+      unreadCounts: {
+        [user.uid]: 0,
+        [otherUserId]: 0
+      }
+    }
+
+    const docRef = await addDoc(collection(db, "conversations"), conversationData)
+
+    return { id: docRef.id, ...conversationData }
+  } catch (error) {
+    console.error("Error creating conversation:", error)
+    return null
+  }
+}
+
+
+  // Handle sending messages
+  const handleSendMessage = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
+    if (!newMessage.trim() || !selectedChat || !user) return
+
+    try {
+      // Add message to conversation
+      await addDoc(collection(db, 'conversations', selectedChat.id, 'messages'), {
+        senderId: user.uid,
+        senderName: fullName || user.displayName || 'User',
+        content: newMessage.trim(),
+        timestamp: serverTimestamp(),
+        type: 'text'
+      })
+
+      // Update conversation's last message and unread counts
+      const otherParticipant = selectedChat.participants.find(p => p !== user.uid);
+if (!otherParticipant) return; // or throw error
+
+await updateDoc(doc(db, 'conversations', selectedChat.id), {
+  lastMessage: newMessage.trim(),
+  lastMessageTime: serverTimestamp(),
+  [`unreadCounts.${otherParticipant}`]:
+    (selectedChat.unreadCounts?.[otherParticipant] || 0) + 1,
+});
+
+      setNewMessage('')
+    } catch (error) {
+      console.error('Error sending message:', error)
+    }
   }
 
   // Handle chat user selection
-  const handleChatSelect = (chatUser: React.SetStateAction<null>) => {
-    setSelectedChat(chatUser)
+  const handleChatSelect = async (chatUser: { id: any; fullName?: string | undefined; displayName?: string | undefined; university?: string | undefined; companyName?: string | undefined; userType?: string | undefined }) => {
+    const conversation = await getOrCreateConversation(chatUser.id)
+    if (conversation) {
+      setSelectedChat(conversation)
+      
+      // Mark messages as read
+      if (conversation.unreadCounts?.[user.uid] > 0) {
+        await updateDoc(doc(db, 'conversations', conversation.id), {
+          [`unreadCounts.${user.uid}`]: 0
+        })
+      }
+    }
   }
+
+  // Handle conversation selection from existing conversations
+  const handleConversationSelect = async (conversation: Conversation) => {
+  setSelectedChat(conversation);
+
+  // Mark messages as read
+  if (conversation.unreadCounts?.[user.uid] > 0) {
+    await updateDoc(doc(db, "conversations", conversation.id), {
+      [`unreadCounts.${user.uid}`]: 0,
+    });
+  }
+};
+
+
+  const firstName = fullName?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Student'
 
   // Profile menu items
   const profileMenuItems = [
@@ -194,7 +332,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Professional Navbar */}
-      <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50 backdrop-blur-sm">
+      <nav className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -204,7 +342,7 @@ const Dashboard = () => {
                   <img
                     src="/images/logobg1.png"
                     alt="LEXHAVEN Logo"
-                    className="h-50 object-contain transition-all duration-300 group-hover:scale-105 "
+                    className="h-50 object-contain transition-all duration-300 group-hover:scale-105"
                   />
                 </div>
               </a>
@@ -231,19 +369,6 @@ const Dashboard = () => {
 
             {/* Right Side */}
             <div className="flex items-center space-x-3">
-              {/* Chat Button */}
-              <div className="relative">
-                <button 
-                  onClick={() => setIsChatOpen(!isChatOpen)}
-                  className="relative p-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                    {chatUsers.reduce((sum, user) => sum + user.unread, 0)}
-                  </span>
-                </button>
-              </div>
-
               {/* Notifications */}
               <div className="relative">
                 <button className="relative p-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200">
@@ -324,156 +449,6 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Chat Modal */}
-      {isChatOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[600px] flex overflow-hidden">
-            {/* Chat Users List */}
-            <div className="w-80 border-r border-slate-200 flex flex-col">
-              {/* Chat Header */}
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">Messages</h2>
-                <button
-                  onClick={() => setIsChatOpen(false)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
-                >
-                  <X className="h-4 w-4 text-slate-400" />
-                </button>
-              </div>
-              
-              {/* Search */}
-              <div className="p-4 border-b border-slate-100">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-                  <input
-                    type="text"
-                    placeholder="Search conversations..."
-                    className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Chat Users */}
-              <div className="flex-1 overflow-y-auto">
-                {chatUsers.map((chatUser) => (
-                  <button
-                    key={chatUser.id}
-                    onClick={() => handleChatSelect(chatUser)}
-                    className={`w-full p-4 text-left hover:bg-slate-50 transition-colors duration-200 border-b border-slate-50 ${
-                      selectedChat?.id === chatUser.id ? 'bg-blue-50 border-blue-100' : ''
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                          {chatUser.avatar}
-                        </div>
-                        {chatUser.online && (
-                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm font-semibold text-slate-900 truncate">{chatUser.name}</h3>
-                          {chatUser.unread > 0 && (
-                            <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1 ml-2 font-medium">
-                              {chatUser.unread}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-slate-500 truncate">{chatUser.title}</p>
-                        <p className="text-xs text-slate-400 mt-1">{chatUser.lastSeen}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Chat Window */}
-            <div className="flex-1 flex flex-col">
-              {selectedChat ? (
-                <>
-                  {/* Chat Header */}
-                  <div className="p-4 border-b border-slate-200 flex items-center space-x-3">
-                    <div className="relative">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {selectedChat.avatar}
-                      </div>
-                      {selectedChat.online && (
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-900">{selectedChat.name}</h3>
-                      <p className="text-xs text-slate-500">{selectedChat.title}</p>
-                      <p className="text-xs text-slate-400">{selectedChat.lastSeen}</p>
-                    </div>
-                  </div>
-
-                  {/* Messages */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {(messages[selectedChat.id] || []).map((message: { id: React.Key | null | undefined; isMe: any; content: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; timestamp: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined }) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                          message.isMe
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-100 text-slate-900'
-                        }`}>
-                          <p className="text-sm">{message.content}</p>
-                          <p className={`text-xs mt-1 ${
-                            message.isMe ? 'text-blue-100' : 'text-slate-500'
-                          }`}>
-                            {message.timestamp}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-
-                  {/* Message Input */}
-                  <div className="p-4 border-t border-slate-200">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type your message..."
-                        className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSendMessage(e)
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={handleSendMessage}
-                        className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!newMessage.trim()}
-                      >
-                        <Send className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-center p-8">
-                  <div>
-                    <MessageCircle className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">Select a conversation</h3>
-                    <p className="text-slate-500">Choose from your existing conversations or start a new one.</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Executive Header Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Executive Welcome */}
@@ -540,6 +515,276 @@ const Dashboard = () => {
       </div>
 
       <Hero/>
+
+      {/* Chat Button (Fixed Position) */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          onClick={() => {
+            setIsChatOpen(true)
+            setIsChatMinimized(false)
+          }}
+          className="relative bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+        >
+          <MessageCircle className="h-6 w-6" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Chat Window (Bottom Right Corner) */}
+      {isChatOpen && (
+        <div className={`fixed bottom-6 right-6 z-50 bg-white rounded-2xl shadow-2xl border border-slate-200 transition-all duration-300 ${
+          isChatMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
+        }`}>
+          {/* Chat Header */}
+          <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-2xl">
+            <div className="flex items-center space-x-3">
+              <MessageCircle className="h-5 w-5" />
+              <div>
+                <h3 className="font-semibold text-sm">Messages</h3>
+                {selectedChat && !isChatMinimized && (
+                  <p className="text-xs text-blue-100">
+                    {selectedChat.participantNames && 
+                     Object.values(selectedChat.participantNames).find(name => 
+                       name !== (fullName || user?.displayName || 'User')
+                     )}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsChatMinimized(!isChatMinimized)}
+                className="p-1.5 hover:bg-blue-800 rounded-lg transition-colors duration-200"
+              >
+                {isChatMinimized ? <Maximize2 className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              </button>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="p-1.5 hover:bg-blue-800 rounded-lg transition-colors duration-200"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {!isChatMinimized && (
+            <div className="flex h-[calc(100%-4rem)]">
+              {/* Chat Users/Conversations List */}
+              <div className="w-full border-r border-slate-200 flex flex-col">
+                {selectedChat ? (
+                  // Chat Messages View
+                  <div className="flex flex-col h-full">
+                    {/* Chat Header with Back Button */}
+                    <div className="p-3 border-b border-slate-100 flex items-center space-x-3">
+                      <button
+                        onClick={() => setSelectedChat(null)}
+                        className="p-1 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+                      >
+                        <ChevronDown className="h-4 w-4 rotate-90" />
+                      </button>
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                        {selectedChat.participantNames && 
+                         Object.values(selectedChat.participantNames).find(name => 
+                           name !== (fullName || user?.displayName || 'User')
+                         )?.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-slate-900 truncate">
+                          {selectedChat.participantNames && 
+                           Object.values(selectedChat.participantNames).find(name => 
+                             name !== (fullName || user?.displayName || 'User')
+                           )}
+                        </h4>
+                        <p className="text-xs text-green-500">Online</p>
+                      </div>
+                    </div>
+
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                      {currentMessages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-[80%] px-3 py-2 rounded-2xl ${
+                            message.senderId === user?.uid
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-slate-100 text-slate-900'
+                          }`}>
+                            <p className="text-sm">{message.content}</p>
+                            <p className={`text-xs mt-1 ${
+                              message.senderId === user?.uid ? 'text-blue-100' : 'text-slate-500'
+                            }`}>
+                              {message.timestamp?.toDate?.().toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
+
+                    {/* Message Input */}
+                    <div className="p-3 border-t border-slate-200">
+                      <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+                        <input
+                          ref={chatInputRef}
+                          type="text"
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder="Type your message..."
+                          className="flex-1 px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={!newMessage.trim()}
+                        >
+                          <Send className="h-4 w-4" />
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                ) : (
+                  // Conversations/Users List
+                  <div className="flex flex-col h-full">
+                    {/* Search */}
+                    <div className="p-3 border-b border-slate-100">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          className="w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Conversations List */}
+                    <div className="flex-1 overflow-y-auto">
+                      {/* Recent Conversations */}
+                      {conversations.length > 0 && (
+                        <div>
+                          <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            Recent Conversations
+                          </div>
+                          {conversations.map((conversation) => {
+  const otherParticipant = conversation.participants.find(
+    (p) => p !== user?.uid
+  );
+
+  // Ensure we have a valid participant ID
+  if (!otherParticipant) return null;
+
+  const otherParticipantName =
+    conversation.participantNames?.[otherParticipant] || "User";
+
+  const unreadCount = conversation.unreadCounts?.[user?.uid ?? ""] || 0;
+
+  return (
+    <button
+      key={conversation.id}
+      onClick={() => handleConversationSelect(conversation)}
+      className="w-full p-3 text-left hover:bg-slate-50 transition-colors duration-200 border-b border-slate-50"
+    >
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-medium">
+          {otherParticipantName.charAt(0)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-slate-900 truncate">
+              {otherParticipantName}
+            </h4>
+            {unreadCount > 0 && (
+              <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1 ml-2 font-medium">
+                {unreadCount}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-slate-500 truncate mt-1">
+            {conversation.lastMessage || "Start a conversation"}
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            {conversation.lastMessageTime?.toDate?.().toLocaleString([], {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
+      </div>
+    </button>
+  );
+})
+                          }
+                        </div>
+                      )}
+                      {/* Available Users to Chat With */}
+                      {chatUsers.length > 0 && (
+                        <div>
+                          <div className="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            {userType === 'student' ? 'Companies & Firms' : 'Students'}
+                          </div>
+                          {chatUsers
+                            .filter(chatUser => !conversations.some(convo => convo.participants.includes(chatUser.id)))
+                            .map((chatUser) => (
+                            <button
+                              key={chatUser.id}
+                              onClick={() => handleChatSelect(chatUser)}
+                              className="w-full p-3 text-left hover:bg-slate-50 transition-colors duration-200 border-b border-slate-50"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="relative">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                    {(chatUser.fullName || chatUser.displayName || 'U').charAt(0)}
+                                  </div>
+                                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-sm font-semibold text-slate-900 truncate">
+                                    {chatUser.fullName || chatUser.displayName || 'User'}
+                                  </h4>
+                                  <p className="text-xs text-slate-500 truncate">
+                                    {chatUser.university || chatUser.companyName || (userType === 'student' ? 'Company' : 'Student')}
+                                  </p>
+                                  <p className="text-xs text-green-500 mt-1">Available to chat</p>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Empty State */}
+                      {conversations.length === 0 && chatUsers.length === 0 && (
+                        <div className="flex-1 flex items-center justify-center text-center p-6">
+                          <div>
+                            <MessageCircle className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                            <h4 className="text-sm font-medium text-slate-900 mb-1">No conversations yet</h4>
+                            <p className="text-xs text-slate-500">
+                              {userType === 'student' 
+                                ? 'Connect with companies and firms to start networking' 
+                                : 'Start conversations with talented students'}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

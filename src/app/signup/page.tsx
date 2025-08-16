@@ -1,23 +1,10 @@
+//src/app/signup/page.tsx
 "use client";
 import { useState, useEffect, SetStateAction } from "react";
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  User,
-  Building,
-  GraduationCap,
-  ArrowRight,
-  Loader2,
-  AlertCircle,
-  CheckCircle,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/lib/firebase";
+import {Eye,EyeOff,Mail,Lock,User,Building,GraduationCap,ArrowRight,Loader2,AlertCircle,CheckCircle,ChevronLeft,ChevronRight,} from "lucide-react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Sample images for signup carousel
 const carouselImages = [
@@ -44,6 +31,8 @@ const carouselImages = [
 ];
 
 export default function SignupPage() {
+  const { signUp, signInWithGoogle, signInWithLinkedIn } = useAuth(); 
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userType, setUserType] = useState("student");
@@ -67,7 +56,7 @@ export default function SignupPage() {
       setCurrentImageIndex((prevIndex) =>
         prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
       );
-    }, 4500); // Change image every 4.5 seconds
+    }, 400); 
 
     return () => clearInterval(interval);
   }, []);
@@ -122,60 +111,50 @@ export default function SignupPage() {
     return true;
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
+  setIsLoading(true);
+  setError("");
+  setSuccess("");
 
-    try {
-      // Simulate API call - replace with actual authentication logic
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+  try {
+  await signUp(formData.email, formData.password, {
+    fullName: formData.fullName,
+    userType,
+    organization: formData.organization,
+  });
 
-      // Mock successful signup
-      console.log("Signup attempted with:", { ...formData, userType });
-      setSuccess(
-        "Account created successfully! Please check your email to verify your account."
-      );
+  router.push("/dashboard");
+} catch (err: any) {
+  setError(err.message || "Failed to create account. Please try again.");
+} finally {
+  setIsLoading(false);
+}
+  }
 
-      // Reset form after successful signup
-      setTimeout(() => {
-        setFormData({
-          fullName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          organization: "",
-          agreeToTerms: false,
-        });
-        setStep(1);
-        setSuccess("");
-      }, 3000);
-    } catch (error) {
-      setError("Failed to create account. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleSocialSignUp = async (provider: "Google" | "LinkedIn") => {
+  setIsLoading(true);
+  setError("");
+  setSuccess("");
 
-  const handleSocialSignUp = async (provider: string) => {
-    setIsLoading(true);
-    setError("");
+  try {
+  if (provider === "Google") {
+    await signInWithGoogle();
+  } else {
+    await signInWithLinkedIn();
+  }
 
-    try {
-      // Simulate social signup - replace with actual OAuth logic
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log(`${provider} signup attempted`);
-      setSuccess(`Successfully signed up with ${provider}!`);
-    } catch (error) {
-      setError(`Failed to sign up with ${provider}. Please try again.`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  router.push("/dashboard"); // 👈 go to dashboard
+} catch (err: any) {
+  setError(`Failed to sign up with ${provider}: ${err.message}`);
+} finally {
+  setIsLoading(false);
+}
+};
+
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -759,3 +738,4 @@ export default function SignupPage() {
     </div>
   );
 }
+

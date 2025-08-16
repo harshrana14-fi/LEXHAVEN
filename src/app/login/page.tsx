@@ -2,6 +2,8 @@
 import { useState, useEffect, SetStateAction } from 'react'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 // Sample images - replace these URLs with your actual images
 const carouselImages = [
@@ -28,6 +30,8 @@ const carouselImages = [
 ]
 
 export default function LoginPage() {
+  const { signIn, signInWithGoogle, signInWithLinkedIn } = useAuth(); 
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -42,13 +46,14 @@ export default function LoginPage() {
       setCurrentImageIndex((prevIndex) => 
         prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
       )
-    }, 4000) // Change image every 4 seconds
+    }, 4000) 
 
     return () => clearInterval(interval)
   }, [])
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
     if (!email || !password) {
       setError('Please fill in all fields')
       return
@@ -57,22 +62,32 @@ export default function LoginPage() {
     setIsLoading(true)
     setError('')
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await signIn(email, password)
+      router.push("/dashboard")
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in. Please check your credentials.')
+    } finally {
       setIsLoading(false)
-      console.log('Login attempted with:', { email, password, rememberMe })
-    }, 2000)
+    }
   }
 
-  const handleSocialLogin = (provider: string) => {
+  const handleSocialLogin = async (provider: "Google" | "LinkedIn") => {
     setIsLoading(true)
     setError('')
     
-    // Simulate social login
-    setTimeout(() => {
+    try {
+      if (provider === "Google") {
+        await signInWithGoogle()
+      } else {
+        await signInWithLinkedIn()
+      }
+      router.push("/dashboard")
+    } catch (err: any) {
+      setError(`Failed to sign in with ${provider}: ${err.message}`)
+    } finally {
       setIsLoading(false)
-      console.log(`${provider} login attempted`)
-    }, 1500)
+    }
   }
 
   const nextImage = () => {
@@ -226,7 +241,7 @@ export default function LoginPage() {
           </div>
 
           {/* Email/Password Form */}
-          <div className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -243,7 +258,7 @@ export default function LoginPage() {
                   className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
                   placeholder="Enter your email address"
                   disabled={isLoading}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+                  required
                 />
               </div>
             </div>
@@ -266,7 +281,7 @@ export default function LoginPage() {
                   className="pl-10 pr-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
                   placeholder="Enter your password"
                   disabled={isLoading}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+                  required
                 />
                 <button
                   type="button"
@@ -296,18 +311,18 @@ export default function LoginPage() {
                 </label>
               </div>
               <div className="text-sm">
-                <button
-                  type="button"
+                <Link
+                  href="/forgot-password"
                   className="text-blue-600 hover:text-blue-500 font-medium"
                 >
                   Forgot password?
-                </button>
+                </Link>
               </div>
             </div>
 
             {/* Login Button */}
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={isLoading || !email || !password}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-sm hover:shadow-md"
             >
@@ -323,7 +338,7 @@ export default function LoginPage() {
                 </>
               )}
             </button>
-          </div>
+          </form>
 
           {/* Sign Up Link */}
           <div className="text-center mt-6">

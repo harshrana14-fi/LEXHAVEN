@@ -21,7 +21,7 @@ const Dashboard = () => {
   const [newMessage, setNewMessage] = useState('')
   const [messages, setMessages] = useState({})
   const [loading, setLoading] = useState(true)
-  const messagesEndRef = useRef(null)
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -135,7 +135,7 @@ const Dashboard = () => {
   }, [messages, selectedChat])
 
   // Handle sending messages
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (!newMessage.trim() || !selectedChat) return
 
@@ -155,7 +155,7 @@ const Dashboard = () => {
   }
 
   // Handle chat user selection
-  const handleChatSelect = (chatUser) => {
+  const handleChatSelect = (chatUser: React.SetStateAction<null>) => {
     setSelectedChat(chatUser)
   }
 
@@ -413,7 +413,7 @@ const Dashboard = () => {
 
                   {/* Messages */}
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {(messages[selectedChat.id] || []).map((message) => (
+                    {(messages[selectedChat.id] || []).map((message: { id: React.Key | null | undefined; isMe: any; content: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; timestamp: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined }) => (
                       <div
                         key={message.id}
                         className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}

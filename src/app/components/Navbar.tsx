@@ -20,91 +20,33 @@ import {
   Users,
   Target,
   BarChart3,
+  Award,
+  MessageSquare,
+  FileText,
 } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [activeNestedDropdown, setActiveNestedDropdown] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
   const navigationItems = [
     {
       name: "Internships",
       href: "/internships",
-      children: [
-        {
-          name: "Browse Internships",
-          href: "/internships",
-          desc: "Find legal internships across India",
-        },
-        {
-          name: "Remote Internships",
-          href: "/remote-internships",
-          desc: "Work from anywhere opportunities",
-        },
-        {
-          name: "Court Internships",
-          href: "/court-internships",
-          desc: "Gain courtroom experience",
-        },
-        {
-          name: "My Applications",
-          href: "/applications",
-          desc: "Track your application status",
-        },
-      ],
     },
     {
       name: "Jobs",
       href: "/jobs",
-      children: [
-        {
-          name: "Browse Jobs",
-          href: "/jobs",
-          desc: "Full-time legal positions",
-        },
-        {
-          name: "Law Firm Jobs",
-          href: "/firm-jobs",
-          desc: "Top law firms hiring now",
-        },
-        {
-          name: "Corporate Legal",
-          href: "/corporate-legal",
-          desc: "In-house counsel positions",
-        },
-        {
-          name: "Government Jobs",
-          href: "/government-jobs",
-          desc: "Public sector opportunities",
-        },
-      ],
     },
     {
       name: "Competitions",
       href: "/competitions",
-      children: [
-        {
-          name: "Moot Courts",
-          href: "/moot-courts",
-          desc: "National & international moots",
-        },
-        {
-          name: "Legal Debates",
-          href: "/debates",
-          desc: "Parliamentary & legal debates",
-        },
-        {
-          name: "Case Competitions",
-          href: "/case-competitions",
-          desc: "Real-world case challenges",
-        },
-        {
-          name: "Essay Competitions",
-          href: "/essay-competitions",
-          desc: "Legal writing contests",
-        },
-      ],
+    },
+    {
+      name: "Practice",
+      href: "/practice",
     },
     {
       name: "Mentorships",
@@ -129,32 +71,6 @@ const Navbar = () => {
           name: "Industry Experts",
           href: "/experts",
           desc: "Connect with specialists",
-        },
-      ],
-    },
-    {
-      name: "Practice",
-      href: "/practice",
-      children: [
-        {
-          name: "Skills Assessment",
-          href: "/assessment",
-          desc: "Test your legal knowledge",
-        },
-        {
-          name: "Legal Courses",
-          href: "/courses",
-          desc: "Enhance your expertise",
-        },
-        {
-          name: "Mock Interviews",
-          href: "/mock-interviews",
-          desc: "Prepare for interviews",
-        },
-        {
-          name: "Certifications",
-          href: "/certifications",
-          desc: "Get industry certified",
         },
       ],
     },
@@ -196,8 +112,47 @@ const Navbar = () => {
       icon: <Target className="w-5 h-5" />,
       title: "Opportunity",
       description: "Engage your target audience",
-      href: "/post-opportunity",
+      href: "#",
       color: "from-yellow-400 to-orange-500",
+      hasNested: true,
+      nested: [
+        {
+          icon: <Trophy className="w-4 h-4" />,
+          title: "Competition",
+          description: "Host moot courts, debates & contests",
+          href: "/host-competition",
+        },
+        {
+          icon: <Calendar className="w-4 h-4" />,
+          title: "Event",
+          description: "Organize webinars & workshops",
+          href: "/host-event",
+        },
+        {
+          icon: <BookOpen className="w-4 h-4" />,
+          title: "Course",
+          description: "Create legal courses & training",
+          href: "/host-course",
+        },
+        {
+          icon: <Award className="w-4 h-4" />,
+          title: "Hackathon",
+          description: "Legal innovation challenges",
+          href: "/host-hackathon",
+        },
+        {
+          icon: <MessageSquare className="w-4 h-4" />,
+          title: "Workshop",
+          description: "Interactive learning sessions",
+          href: "/host-workshop",
+        },
+        {
+          icon: <FileText className="w-4 h-4" />,
+          title: "Seminar",
+          description: "Knowledge sharing sessions",
+          href: "/host-seminar",
+        },
+      ],
     },
     {
       icon: <Briefcase className="w-5 h-5" />,
@@ -227,6 +182,7 @@ const Navbar = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setActiveDropdown(null);
+        setActiveNestedDropdown(null);
       }
     };
 
@@ -239,11 +195,21 @@ const Navbar = () => {
   const scrollToHome = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveDropdown(null);
+    setActiveNestedDropdown(null);
     setIsMenuOpen(false);
   };
 
   const toggleDropdown = (name: string) => {
     setActiveDropdown(activeDropdown === name ? null : name);
+    setActiveNestedDropdown(null);
+  };
+
+  const toggleNestedDropdown = (name: string) => {
+    setActiveNestedDropdown(activeNestedDropdown === name ? null : name);
+  };
+
+  const handleOpportunityClick = () => {
+    setActiveNestedDropdown(activeNestedDropdown === "opportunity" ? null : "opportunity");
   };
 
   return (
@@ -275,28 +241,31 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center space-x-1">
             {navigationItems.map((item) => (
               <div key={item.name} className="relative">
-                <button
-                  onClick={() =>
-                    item.children ? toggleDropdown(item.name) : null
-                  }
-                  onMouseEnter={() =>
-                    item.children && setActiveDropdown(item.name)
-                  }
-                  className={`flex items-center space-x-1.5 px-4 py-2.5 text-slate-700 hover:text-blue-600 transition-all duration-200 font-medium text-sm rounded-xl hover:bg-blue-50/60 ${
-                    activeDropdown === item.name
-                      ? "text-blue-600 bg-blue-50/60"
-                      : ""
-                  }`}
-                >
-                  <span>{item.name}</span>
-                  {item.children && (
+                {item.children ? (
+                  <button
+                    onClick={() => toggleDropdown(item.name)}
+                    onMouseEnter={() => setActiveDropdown(item.name)}
+                    className={`flex items-center space-x-1.5 px-4 py-2.5 text-slate-700 hover:text-blue-600 transition-all duration-200 font-medium text-sm rounded-xl hover:bg-blue-50/60 ${
+                      activeDropdown === item.name
+                        ? "text-blue-600 bg-blue-50/60"
+                        : ""
+                    }`}
+                  >
+                    <span>{item.name}</span>
                     <ChevronDown
                       className={`w-4 h-4 transition-transform duration-200 ${
                         activeDropdown === item.name ? "rotate-180" : ""
                       }`}
                     />
-                  )}
-                </button>
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="flex items-center space-x-1.5 px-4 py-2.5 text-slate-700 hover:text-blue-600 transition-all duration-200 font-medium text-sm rounded-xl hover:bg-blue-50/60"
+                  >
+                    <span>{item.name}</span>
+                  </Link>
+                )}
 
                 {item.children && activeDropdown === item.name && (
                   <div className="absolute top-full left-0 mt-2 w-72 bg-white/98 backdrop-blur-lg rounded-2xl shadow-2xl border border-slate-200/80 py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -342,32 +311,93 @@ const Navbar = () => {
               {activeDropdown === "host" && (
                 <div className="absolute top-full right-0 mt-2 w-80 bg-white/98 backdrop-blur-lg rounded-2xl shadow-2xl border border-slate-200/80 py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                   {hostDropdownItems.map((item, index) => (
-                    <Link
-                      key={item.title}
-                      href={item.href}
-                      className="flex items-center space-x-4 px-4 py-4 hover:bg-slate-50/80 transition-colors duration-200 mx-2 rounded-xl group"
-                      onClick={() => setActiveDropdown(null)}
-                    >
-                      <div
-                        className={`p-3 rounded-xl bg-gradient-to-r ${item.color} shadow-lg`}
-                      >
-                        <div className="text-white">{item.icon}</div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
-                          {item.title}
-                        </div>
-                        <div className="text-sm text-slate-500 mt-0.5">
-                          {item.description}
-                        </div>
-                      </div>
-                      {index < hostDropdownItems.length - 1 &&
-                        item.title === "Assessments" && (
-                          <div className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                            Upgrade
+                    <div key={item.title} className="relative">
+                      {item.hasNested ? (
+                        <button
+                          onClick={handleOpportunityClick}
+                          className="flex items-center justify-between w-full space-x-4 px-4 py-4 hover:bg-slate-50/80 transition-colors duration-200 mx-2 rounded-xl group"
+                        >
+                          <div className="flex items-center space-x-4">
+                            <div
+                              className={`p-3 rounded-xl bg-gradient-to-r ${item.color} shadow-lg`}
+                            >
+                              <div className="text-white">{item.icon}</div>
+                            </div>
+                            <div className="flex-1 text-left">
+                              <div className="font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
+                                {item.title}
+                              </div>
+                              <div className="text-sm text-slate-500 mt-0.5">
+                                {item.description}
+                              </div>
+                            </div>
                           </div>
-                        )}
-                    </Link>
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              activeNestedDropdown === "opportunity" ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          className="flex items-center space-x-4 px-4 py-4 hover:bg-slate-50/80 transition-colors duration-200 mx-2 rounded-xl group"
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            setActiveNestedDropdown(null);
+                          }}
+                        >
+                          <div
+                            className={`p-3 rounded-xl bg-gradient-to-r ${item.color} shadow-lg`}
+                          >
+                            <div className="text-white">{item.icon}</div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
+                              {item.title}
+                            </div>
+                            <div className="text-sm text-slate-500 mt-0.5">
+                              {item.description}
+                            </div>
+                          </div>
+                          {index < hostDropdownItems.length - 1 &&
+                            item.title === "Assessments" && (
+                              <div className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                Upgrade
+                              </div>
+                            )}
+                        </Link>
+                      )}
+
+                      {/* Nested Opportunity Dropdown */}
+                      {item.hasNested && activeNestedDropdown === "opportunity" && (
+                        <div className="ml-8 mt-2 space-y-1">
+                          {item.nested?.map((nestedItem) => (
+                            <Link
+                              key={nestedItem.title}
+                              href={nestedItem.href}
+                              className="flex items-center space-x-3 px-3 py-3 hover:bg-blue-50/80 transition-colors duration-200 rounded-xl group"
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                setActiveNestedDropdown(null);
+                              }}
+                            >
+                              <div className="p-2 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
+                                <div className="text-blue-600">{nestedItem.icon}</div>
+                              </div>
+                              <div>
+                                <div className="font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-sm">
+                                  {nestedItem.title}
+                                </div>
+                                <div className="text-xs text-slate-500">
+                                  {nestedItem.description}
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -419,40 +449,48 @@ const Navbar = () => {
             <div className="px-2 py-3 space-y-1 max-h-96 overflow-y-auto">
               {navigationItems.map((item) => (
                 <div key={item.name}>
-                  <button
-                    onClick={() =>
-                      item.children ? toggleDropdown(item.name) : null
-                    }
-                    className="flex items-center justify-between w-full text-left px-3 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 rounded-xl font-medium transition-colors duration-200"
-                  >
-                    <span>{item.name}</span>
-                    {item.children && (
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-200 ${
-                          activeDropdown === item.name ? "rotate-180" : ""
-                        }`}
-                      />
-                    )}
-                  </button>
-                  {item.children && activeDropdown === item.name && (
-                    <div className="ml-4 space-y-1 mt-1">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          href={child.href}
-                          className="block px-3 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50/60 rounded-lg text-sm transition-colors duration-200"
-                          onClick={() => {
-                            setActiveDropdown(null);
-                            setIsMenuOpen(false);
-                          }}
-                        >
-                          <div className="font-medium">{child.name}</div>
-                          <div className="text-xs text-slate-400 mt-0.5">
-                            {child.desc}
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+                  {item.children ? (
+                    <>
+                      <button
+                        onClick={() => toggleDropdown(item.name)}
+                        className="flex items-center justify-between w-full text-left px-3 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 rounded-xl font-medium transition-colors duration-200"
+                      >
+                        <span>{item.name}</span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-200 ${
+                            activeDropdown === item.name ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      {activeDropdown === item.name && (
+                        <div className="ml-4 space-y-1 mt-1">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.name}
+                              href={child.href}
+                              className="block px-3 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50/60 rounded-lg text-sm transition-colors duration-200"
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                setIsMenuOpen(false);
+                              }}
+                            >
+                              <div className="font-medium">{child.name}</div>
+                              <div className="text-xs text-slate-400 mt-0.5">
+                                {child.desc}
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="block px-3 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50/60 rounded-xl font-medium transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
                   )}
                 </div>
               ))}
@@ -476,29 +514,88 @@ const Navbar = () => {
                 {activeDropdown === "host-mobile" && (
                   <div className="ml-4 space-y-1">
                     {hostDropdownItems.map((item) => (
-                      <Link
-                        key={item.title}
-                        href={item.href}
-                        className="flex items-center space-x-3 px-3 py-3 hover:bg-slate-50/80 rounded-xl transition-colors duration-200"
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          setIsMenuOpen(false);
-                        }}
-                      >
-                        <div
-                          className={`p-2 rounded-lg bg-gradient-to-r ${item.color}`}
-                        >
-                          <div className="text-white text-sm">{item.icon}</div>
-                        </div>
-                        <div>
-                          <div className="font-medium text-slate-800 text-sm">
-                            {item.title}
-                          </div>
-                          <div className="text-xs text-slate-500">
-                            {item.description}
-                          </div>
-                        </div>
-                      </Link>
+                      <div key={item.title}>
+                        {item.hasNested ? (
+                          <>
+                            <button
+                              onClick={() => toggleNestedDropdown("opportunity-mobile")}
+                              className="flex items-center justify-between w-full space-x-3 px-3 py-3 hover:bg-slate-50/80 rounded-xl transition-colors duration-200"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div
+                                  className={`p-2 rounded-lg bg-gradient-to-r ${item.color}`}
+                                >
+                                  <div className="text-white text-sm">{item.icon}</div>
+                                </div>
+                                <div>
+                                  <div className="font-medium text-slate-800 text-sm">
+                                    {item.title}
+                                  </div>
+                                  <div className="text-xs text-slate-500">
+                                    {item.description}
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform duration-200 ${
+                                  activeNestedDropdown === "opportunity-mobile" ? "rotate-180" : ""
+                                }`}
+                              />
+                            </button>
+                            {activeNestedDropdown === "opportunity-mobile" && (
+                              <div className="ml-6 space-y-1 mt-1">
+                                {item.nested?.map((nestedItem) => (
+                                  <Link
+                                    key={nestedItem.title}
+                                    href={nestedItem.href}
+                                    className="flex items-center space-x-2 px-2 py-2 hover:bg-blue-50/80 rounded-lg transition-colors duration-200"
+                                    onClick={() => {
+                                      setActiveDropdown(null);
+                                      setActiveNestedDropdown(null);
+                                      setIsMenuOpen(false);
+                                    }}
+                                  >
+                                    <div className="p-1 rounded bg-blue-100">
+                                      <div className="text-blue-600 text-xs">{nestedItem.icon}</div>
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-slate-800 text-xs">
+                                        {nestedItem.title}
+                                      </div>
+                                      <div className="text-xs text-slate-500">
+                                        {nestedItem.description}
+                                      </div>
+                                    </div>
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <Link
+                            href={item.href}
+                            className="flex items-center space-x-3 px-3 py-3 hover:bg-slate-50/80 rounded-xl transition-colors duration-200"
+                            onClick={() => {
+                              setActiveDropdown(null);
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <div
+                              className={`p-2 rounded-lg bg-gradient-to-r ${item.color}`}
+                            >
+                              <div className="text-white text-sm">{item.icon}</div>
+                            </div>
+                            <div>
+                              <div className="font-medium text-slate-800 text-sm">
+                                {item.title}
+                              </div>
+                              <div className="text-xs text-slate-500">
+                                {item.description}
+                              </div>
+                            </div>
+                          </Link>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}

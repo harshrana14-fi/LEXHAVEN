@@ -1,33 +1,34 @@
 // lib/supabase.ts
-import { createBrowserClient, createServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from "@supabase/supabase-js";
+import { auth } from "./firebase";
 
-// Client-side Supabase (for use inside Client Components)
-export const createClientBrowser = () =>
-  createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+// ✅ Base values
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-// Server-side Supabase (for use inside Server Components / Route Handlers)
-export const createClientServer = async () => {
-  const cookieStore = await cookies()
+// ✅ Public client (safe for frontend, browsing data with anon key)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options })
-        },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: '', ...options })
-        },
+// ✅ Authenticated client (attaches Firebase JWT for RLS)
+export const getSupabaseWithAuth = async () => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) return supabase;
+
+  const token = await currentUser.getIdToken(/* forceRefresh */ true);
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    }
-  )
-}
+    },
+  });
+};
+
+// ✅ Server-side client (⚠️ uses service role key → NEVER import in client code)
+export const supabaseServer = () => {
+  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: { persistSession: false }, // no local session storage
+  });
+};

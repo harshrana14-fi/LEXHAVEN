@@ -1,5 +1,5 @@
 //src/app/signup/page.tsx
-"use client";
+"use client"
 import { useState, useEffect, SetStateAction } from "react";
 import {Eye,EyeOff,Mail,Lock,User,Building,GraduationCap,ArrowRight,Loader2,AlertCircle,CheckCircle,ChevronLeft,ChevronRight,} from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -56,7 +56,7 @@ export default function SignupPage() {
       setCurrentImageIndex((prevIndex) =>
         prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
       );
-    }, 400); 
+    }, 3000); 
 
     return () => clearInterval(interval);
   }, []);
@@ -127,13 +127,17 @@ export default function SignupPage() {
     organization: formData.organization,
   });
 
-  router.push("/dashboard");
-} catch (err: any) {
-  setError(err.message || "Failed to create account. Please try again.");
-} finally {
-  setIsLoading(false);
-}
-  }
+ if (userType === "student") {
+        router.push("/dashboard/user");
+      } else if (userType === "company") {
+        router.push("/dashboard/firm");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSocialSignUp = async (provider: "Google" | "LinkedIn") => {
   setIsLoading(true);
@@ -147,13 +151,18 @@ export default function SignupPage() {
     await signInWithLinkedIn();
   }
 
-  router.push("/dashboard"); // 👈 go to dashboard
-} catch (err: any) {
-  setError(`Failed to sign up with ${provider}: ${err.message}`);
-} finally {
-  setIsLoading(false);
-}
-};
+if (userType === "student") {
+        router.push("/dashboard/user");
+      } else if (userType === "company") {
+        router.push("/dashboard/firm");
+      }
+
+    } catch (err: any) {
+      setError(`Failed to sign up with ${provider}: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   const nextImage = () => {

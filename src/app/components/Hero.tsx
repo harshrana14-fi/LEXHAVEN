@@ -1,6 +1,7 @@
 // components/Hero.tsx
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   ArrowRight,
@@ -16,6 +17,63 @@ import React from "react";
 import WhosUsingSection from "./WhosUsingSection";
 
 const Hero = () => {
+  const router = useRouter();
+
+  const cards = [
+    {
+      title: "Internships",
+      desc: "Gain Courtroom Experience",
+      img: "https://tse4.mm.bing.net/th/id/OIP.E3Y68GCTPC9CZ10HrigAEgHaE7?pid=Api&P=0&h=220",
+      color: "from-emerald-400 to-teal-500",
+      href: "/internships",
+      icon: null,
+    },
+    {
+      title: "Mentorships",
+      desc: "Guidance from Top Advocates",
+      img: "https://i.pinimg.com/originals/80/11/44/801144eaaf4a208d99b75f72e6538913.jpg",
+      color: "from-orange-400 to-red-500",
+      href: "/mentorships",
+      icon: null,
+    },
+    {
+      title: "Jobs",
+      desc: "Join Leading Law Firms",
+      img: "https://images.unsplash.com/photo-1523292562811-8fa7962a78c8",
+      color: "from-blue-400 to-indigo-600",
+      href: "/jobs",
+      icon: null,
+    },
+    {
+      title: "Practice",
+      desc: "Refine Legal Skills Daily",
+      img: "https://tse2.mm.bing.net/th/id/OIP.4jdTPVOLFxe_ZEayyQaDXgHaEc?pid=Api&P=0&h=220",
+      color: "from-purple-400 to-violet-600",
+      href: "/practice",
+      icon: null,
+    },
+    {
+      title: "Competitions",
+      desc: "Battle in Moot Courts",
+      img: "/images/helloo.jpg",
+      color: "from-yellow-400 via-orange-400 to-red-500",
+      href: "/competitions",
+      icon: <Trophy className="w-6 h-6 text-yellow-200" />,
+    },
+    {
+      title: "More ➞",
+      desc: "Explore Legal Resources",
+      img: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+      color: "from-pink-400 to-rose-500",
+      href: "/resources",
+      icon: null,
+    },
+  ];
+
+  const handleCardClick = (href: string) => {
+    router.push(href);
+  };
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 overflow-hidden">
       {/* Background Shapes */}
@@ -71,49 +129,10 @@ const Hero = () => {
 
           {/* Right Cards */}
           <div className="grid grid-cols-2 gap-4 lg:gap-6">
-            {[
-              {
-                title: "Internships",
-                desc: "Gain Courtroom Experience",
-                img: "https://tse4.mm.bing.net/th/id/OIP.E3Y68GCTPC9CZ10HrigAEgHaE7?pid=Api&P=0&h=220",
-                color: "from-emerald-400 to-teal-500",
-              },
-              {
-                title: "Mentorships",
-                desc: "Guidance from Top Advocates",
-                img: "https://i.pinimg.com/originals/80/11/44/801144eaaf4a208d99b75f72e6538913.jpg",
-                color: "from-orange-400 to-red-500",
-              },
-              {
-                title: "Jobs",
-                desc: "Join Leading Law Firms",
-                img: "https://images.unsplash.com/photo-1523292562811-8fa7962a78c8",
-                color: "from-blue-400 to-indigo-600",
-              },
-              {
-                title: "Practice",
-                desc: "Refine Legal Skills Daily",
-                img: "https://tse2.mm.bing.net/th/id/OIP.4jdTPVOLFxe_ZEayyQaDXgHaEc?pid=Api&P=0&h=220",
-                color: "from-purple-400 to-violet-600",
-                icon: null,
-              },
-              {
-                title: "Competitions",
-                desc: "Battle in Moot Courts",
-                img: "/images/helloo.jpg",
-                color: "from-yellow-400 via-orange-400 to-red-500",
-                icon: <Trophy className="w-6 h-6 text-yellow-200" />,
-              },
-              {
-                title: "More ➞",
-                desc: "Explore Legal Resources",
-                img: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
-                color: "from-pink-400 to-rose-500",
-                icon: null,
-              },
-            ].map((card, i) => (
+            {cards.map((card, i) => (
               <div
                 key={i}
+                onClick={() => handleCardClick(card.href)}
                 className={`rounded-3xl p-6 text-white transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group cursor-pointer overflow-hidden relative ${
                   i === 4 || i === 5 ? "col-span-2" : ""
                 }`}
@@ -130,6 +149,10 @@ const Hero = () => {
                 {card.icon && (
                   <div className="absolute bottom-4 right-4">{card.icon}</div>
                 )}
+                {/* Add a subtle arrow indicator on hover */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <ArrowRight className="w-5 h-5 text-white/80" />
+                </div>
               </div>
             ))}
           </div>

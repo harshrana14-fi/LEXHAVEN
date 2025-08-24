@@ -30,7 +30,7 @@ const carouselImages = [
 ]
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle, signInWithLinkedIn } = useAuth(); 
+  const { signIn, signInWithGoogle, signInWithLinkedIn, user } = useAuth(); 
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
@@ -46,10 +46,22 @@ export default function LoginPage() {
       setCurrentImageIndex((prevIndex) => 
         prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
       )
-    }, 4000) 
+    }, 3000) 
 
     return () => clearInterval(interval)
   }, [])
+
+  // Helper function to determine redirect path based on user type
+  const getRedirectPath = (userType: string) => {
+    if (userType === "student") {
+      return "/dashboard/user";
+    } else if (userType === "company") {
+      return "/dashboard/firm";
+    } else {
+      // Fallback for unknown user types
+      return "/dashboard/user";
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,8 +75,18 @@ export default function LoginPage() {
     setError('')
 
     try {
-      await signIn(email, password)
-      router.push("/dashboard")
+      const result = await signIn(email, password)
+      
+      // Get user type from the authentication result or user context
+      const userType = result?.userType || user?.userType;
+      
+      // Redirect based on user type
+      if (userType) {
+        router.push(getRedirectPath(userType));
+      } else {
+        // If user type is not available, redirect to generic dashboard
+        router.push("/dashboard/firm");
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in. Please check your credentials.')
     } finally {
@@ -77,12 +99,23 @@ export default function LoginPage() {
     setError('')
     
     try {
+      let result;
       if (provider === "Google") {
-        await signInWithGoogle()
+        result = await signInWithGoogle()
       } else {
-        await signInWithLinkedIn()
+        result = await signInWithLinkedIn()
       }
-      router.push("/dashboard")
+      
+      // Get user type from the authentication result or user context
+      const userType = result?.userType || user?.userType;
+      
+      // Redirect based on user type
+      if (userType) {
+        router.push(getRedirectPath(userType));
+      } else {
+        // If user type is not available, redirect to generic dashboard
+        router.push("/dashboard/firm");
+      }
     } catch (err: any) {
       setError(`Failed to sign in with ${provider}: ${err.message}`)
     } finally {

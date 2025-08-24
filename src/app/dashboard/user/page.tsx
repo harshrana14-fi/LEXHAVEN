@@ -1,3 +1,4 @@
+//  src/app/dashboard/user/page.tsx
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import { User ,FileText, Briefcase, Target, Users, BarChart3, Trophy, Star,
@@ -6,7 +7,7 @@ import { User ,FileText, Briefcase, Target, Users, BarChart3, Trophy, Star,
   Shield, Zap, Globe, MessageCircle, Send, Search, Minus, Maximize2,
   ChevronUp, Phone, Video, MoreHorizontal, Paperclip, Smile
 } from 'lucide-react'
-import Hero from '../components/Hero'
+import Hero from '../../components/Hero'
 import { auth, db } from '@/lib/firebase'
 import { Timestamp } from "firebase/firestore"
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'

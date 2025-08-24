@@ -4,6 +4,24 @@ import { useState, useEffect } from "react";
 import { Building2, MapPin, DollarSign, Calendar, Users, Award, Clock, FileText, Plus, Eye, Briefcase, Scale, Gavel } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+// Define the interface for internship posts
+interface InternshipPost {
+  id: string;
+  title: string;
+  description?: string;
+  company: string;
+  location?: string;
+  stipend?: string;
+  duration?: string;
+  requirements?: string;
+  practice_areas?: string[];
+  application_deadline?: string;
+  contact_email?: string;
+  firm_size?: string;
+  about_firm?: string;
+  created_at?: string;
+}
+
 export default function CreateInternshipPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -16,14 +34,14 @@ export default function CreateInternshipPage() {
   // Enhanced form fields
   const [duration, setDuration] = useState("");
   const [requirements, setRequirements] = useState("");
-  const [practiceAreas, setPracticeAreas] = useState([]);
+  const [practiceAreas, setPracticeAreas] = useState<string[]>([]);
   const [applicationDeadline, setApplicationDeadline] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [firmSize, setFirmSize] = useState("");
   const [aboutFirm, setAboutFirm] = useState("");
   
-  // Recent posts state
-  const [recentPosts, setRecentPosts] = useState([]);
+  // Recent posts state with proper typing
+  const [recentPosts, setRecentPosts] = useState<InternshipPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [activeTab, setActiveTab] = useState("create");
 
@@ -64,7 +82,7 @@ export default function CreateInternshipPage() {
     fetchRecentPosts();
   }, []);
 
-  const handlePracticeAreaToggle = (area) => {
+  const handlePracticeAreaToggle = (area: string) => {
     setPracticeAreas(prev => 
       prev.includes(area) 
         ? prev.filter(a => a !== area)
@@ -72,7 +90,7 @@ export default function CreateInternshipPage() {
     );
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -119,7 +137,7 @@ export default function CreateInternshipPage() {
     setLoading(false);
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

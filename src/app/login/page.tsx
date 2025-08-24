@@ -51,15 +51,26 @@ export default function LoginPage() {
     return () => clearInterval(interval)
   }, [])
 
+  // Redirect user if already authenticated
+  useEffect(() => {
+    if (user) {
+      const redirectPath = getRedirectPath(user.userType);
+      router.push(redirectPath);
+    }
+  }, [user, router])
+
   // Helper function to determine redirect path based on user type
   const getRedirectPath = (userType: string) => {
-    if (userType === "student") {
-      return "/dashboard/user";
-    } else if (userType === "company") {
-      return "/dashboard/firm";
-    } else {
-      // Fallback for unknown user types
-      return "/dashboard/user";
+    switch (userType?.toLowerCase()) {
+      case "student":
+        return "/dashboard/user";
+      case "company":
+      case "firm":
+        return "/dashboard/firm";
+      default:
+        // Fallback - you might want to redirect to a profile completion page
+        console.warn(`Unknown user type: ${userType}. Redirecting to student dashboard.`);
+        return "/dashboard/user";
     }
   }
 
@@ -77,17 +88,26 @@ export default function LoginPage() {
     try {
       const result = await signIn(email, password)
       
-      // Get user type from the authentication result or user context
-      const userType = result?.userType || user?.userType;
+      // Wait a moment for user context to update
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Redirect based on user type
+      // Get user type from the authentication result first, then fallback to user context
+      const userType = result?.userType || result?.user?.userType || user?.userType;
+      
+      console.log('Login result:', result);
+      console.log('User type detected:', userType);
+      
       if (userType) {
-        router.push(getRedirectPath(userType));
+        const redirectPath = getRedirectPath(userType);
+        console.log('Redirecting to:', redirectPath);
+        router.push(redirectPath);
       } else {
-        // If user type is not available, redirect to generic dashboard
-        router.push("/dashboard/firm");
+        // If no user type is found, there might be an issue with the authentication
+        setError('Unable to determine account type. Please contact support.');
+        console.error('No user type found in authentication result:', result);
       }
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.message || 'Failed to sign in. Please check your credentials.')
     } finally {
       setIsLoading(false)
@@ -106,17 +126,27 @@ export default function LoginPage() {
         result = await signInWithLinkedIn()
       }
       
-      // Get user type from the authentication result or user context
-      const userType = result?.userType || user?.userType;
+      // Wait a moment for user context to update
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Redirect based on user type
+      // Get user type from the authentication result first, then fallback to user context
+      const userType = result?.userType || result?.user?.userType || user?.userType;
+      
+      console.log('Social login result:', result);
+      console.log('User type detected:', userType);
+      
       if (userType) {
-        router.push(getRedirectPath(userType));
+        const redirectPath = getRedirectPath(userType);
+        console.log('Redirecting to:', redirectPath);
+        router.push(redirectPath);
       } else {
-        // If user type is not available, redirect to generic dashboard
-        router.push("/dashboard/firm");
+        // For social logins, the user might need to complete their profile
+        // Redirect to a profile completion page or show an error
+        setError('Please complete your profile setup or contact support.');
+        console.error('No user type found in social login result:', result);
       }
     } catch (err: any) {
+      console.error('Social login error:', err);
       setError(`Failed to sign in with ${provider}: ${err.message}`)
     } finally {
       setIsLoading(false)
@@ -137,6 +167,18 @@ export default function LoginPage() {
 
   const goToImage = (index: SetStateAction<number>) => {
     setCurrentImageIndex(index)
+  }
+
+  // Don't render the login form if user is already authenticated
+  if (user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Redirecting to your dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

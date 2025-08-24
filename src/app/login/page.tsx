@@ -30,7 +30,7 @@ const carouselImages = [
 ]
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle, signInWithLinkedIn, user } = useAuth(); 
+  const { signIn, signInWithGoogle, signInWithLinkedIn, user, userProfile, loading } = useAuth(); 
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
@@ -53,11 +53,14 @@ export default function LoginPage() {
 
   // Redirect user if already authenticated
   useEffect(() => {
-    if (user) {
+    if (user && userProfile) {
+      const redirectPath = getRedirectPath(userProfile.user_type);
+      router.push(redirectPath);
+    } else if (user && user.userType) {
       const redirectPath = getRedirectPath(user.userType);
       router.push(redirectPath);
     }
-  }, [user, router])
+  }, [user, userProfile, router])
 
   // Helper function to determine redirect path based on user type
   const getRedirectPath = (userType: string) => {
@@ -88,17 +91,11 @@ export default function LoginPage() {
     try {
       const result = await signIn(email, password)
       
-      // Wait a moment for user context to update
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Get user type from the authentication result first, then fallback to user context
-      const userType = result?.userType || result?.user?.userType || user?.userType;
-      
       console.log('Login result:', result);
-      console.log('User type detected:', userType);
+      console.log('User type detected:', result.userType);
       
-      if (userType) {
-        const redirectPath = getRedirectPath(userType);
+      if (result.userType) {
+        const redirectPath = getRedirectPath(result.userType);
         console.log('Redirecting to:', redirectPath);
         router.push(redirectPath);
       } else {
@@ -126,17 +123,11 @@ export default function LoginPage() {
         result = await signInWithLinkedIn()
       }
       
-      // Wait a moment for user context to update
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Get user type from the authentication result first, then fallback to user context
-      const userType = result?.userType || result?.user?.userType || user?.userType;
-      
       console.log('Social login result:', result);
-      console.log('User type detected:', userType);
+      console.log('User type detected:', result.userType);
       
-      if (userType) {
-        const redirectPath = getRedirectPath(userType);
+      if (result.userType) {
+        const redirectPath = getRedirectPath(result.userType);
         console.log('Redirecting to:', redirectPath);
         router.push(redirectPath);
       } else {
@@ -167,6 +158,18 @@ export default function LoginPage() {
 
   const goToImage = (index: SetStateAction<number>) => {
     setCurrentImageIndex(index)
+  }
+
+  // Show loading state while auth context is loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   // Don't render the login form if user is already authenticated

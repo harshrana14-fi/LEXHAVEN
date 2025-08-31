@@ -3,7 +3,7 @@ import Navbar from '@/app/components/Navbar'
 import Hero from '@/app/components/Hero'
 import Features from '@/app/components/Features'
 import Stats from '@/app/components/Stats'
-import RecentInternships from '@/app/components/RecentInternships'
+import RecentInternships from '@/app/components/recentinternhipevents'
 import UpcomingEvents from '@/app/components/UpcomingEvents'
 import Footer from '@/app/components/Footer'
 

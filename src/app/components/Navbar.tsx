@@ -38,7 +38,7 @@ const Navbar = () => {
   const navigationItems = [
     {
       name: "Internships",
-      href: "/internships",
+      href: "/browseinternships",
     },
     {
       name: "Jobs",
@@ -516,7 +516,7 @@ const Navbar = () => {
 
             {/* Login Button */}
             <Link
-              href="/login"
+              href="/auth"
               className="ml-4 px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold rounded-xl hover:from-slate-700 hover:to-slate-600 transition-all duration-300 text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border border-slate-600"
             >
               Sign In
@@ -733,7 +733,7 @@ const Navbar = () => {
                 )}
 
                 <Link
-                  href="/login"
+                  href="/auth"
                   className="block w-full text-center bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 rounded-xl font-semibold hover:from-slate-700 hover:to-slate-600 transition-all duration-200 shadow-lg"
                   onClick={() => setIsMenuOpen(false)}
                 >

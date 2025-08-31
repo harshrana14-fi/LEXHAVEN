@@ -25,7 +25,7 @@ const Hero = () => {
       desc: "Gain Courtroom Experience",
       img: "https://tse4.mm.bing.net/th/id/OIP.E3Y68GCTPC9CZ10HrigAEgHaE7?pid=Api&P=0&h=220",
       color: "from-emerald-400 to-teal-500",
-      href: "/internships",
+      href: "/browseinternships",
       icon: null,
     },
     {
